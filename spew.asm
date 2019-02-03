@@ -20,17 +20,6 @@
 ; *** flashing anything (to codeflash) will erase your rom.
 ; ***   You have to do this BEFORE INSTALLING SBOOT!
 
-
-bsendbyte equ #802D	; raises busy & sends byte.
-; We use the existing sendbyte from original update code.
-; This means codeflash page #01 needs to be banked in to
-; slot8000 before calling bsendbyte.
-
-done      equ #0000	; Gotta go somewhere when done, we reboot.
-; Mailstation will call eventhandler 3 or 4 times when you
-; select the new application, and we only want to exec once,
-; so we do not return at end, we reboot after first "event".
-
 ; STEP 1)
 ; This is data from dataflash page #08, sector #00 (which
 ; translates to a raw address of 020000), of a mailstation
@@ -98,27 +87,30 @@ done      equ #0000	; Gotta go somewhere when done, we reboot.
 ; *** Enter edit mode, enter at least the bytes for the JP of
 ;     the following code, and save the sector.  Goto step 3.
 
-	org	#4000	; This is *always* #4000, regardless of
-			; what page you use.
+	.module	spew
+
+	.area	_DATA
+	.area	_HEADER (ABS)
+	.org	0x4000			; This is *always* #4000, regardless of
+					; what page you use.
 
 	jp	eventhandler
 
-	defw	icon	; icon location (in this page)
-	defw	caption
-	defw	dunno
+	.dw	(icon)			; icon location (in this page)
+	.dw	(caption)
+	.dw	(dunno)
 
 dunno:
-	defb	#00
+	.db	#0
 zip:
-	defw	#0000
+	.db	#0
 zilch:
-	defw	#0000
-
+	.db	#0
 caption:
-	defw	#0001		; ?????
-	defw	endcap-caption-6 ; num of chars
-	defw	#0006		; offset to first char
-	defm	"Spew"		; the caption string
+	.dw	#0x0001			; ?????
+	.dw	(endcap - caption - 6)	; num of chars
+	.dw	#0006			; offset to first char
+	.ascii	"Spew"			; the caption string
 endcap:
 
 icon:
@@ -153,47 +145,61 @@ icon:
 ;     "yahoo" or in "extras".
 
 
+	.equ	bsendbyte, #0x802D	; raises busy & sends byte.
+					; We use the existing sendbyte from
+					; original update code. This means
+					; codeflash page #01 needs to be banked
+					; in to slot8000 before calling bsendbyte.
+
+	.equ	done, #0x0000		; Gotta go somewhere when done, we reboot.
+					; Mailstation will call eventhandler 3
+					; or 4 times when you select the new
+					; application, and we only want to exec
+					; once, so we do not return at end, we
+					; reboot after first "event".
+
+
 eventhandler:
 ; This is the "event handler" for our new app.  It doesn't
 ; really handle any events, it just spews the rom contents
 ; over the laplink.
 
 	xor	a		; Set slot8000device = codeflash
-	out	(8),a
+	out	(8), a
 
-	ld	bc,#4000	; b=count=64 pages, c=currentpage=0
+	ld	bc, #0x4000	; b=count=64 pages, c=currentpage=0
 
 pgloop:
 ; for count = 64 downto 1 do
 
-	ld	hl,#8000	; start at begining of each pg
+	ld	hl, #0x8000	; start at begining of each page
 
 byteloop:
 ; for i=#8000 to #BFFF do
 
-	ld	a,c         ; bank currentpage into slot8000
-	out	(7),a
+	ld	a, c		; bank currentpage into slot8000
+	out	(7), a
 
-	ld	a,(hl)      ; get byte[i]
+	ld	a, (hl)		; get byte[i]
 
 	push	hl
 	push	bc
 
-	ld	h,a         ; h is byte
+	ld	h, a		; h is byte
 
-	ld	a,#01       ; bank bsendbyte into slot8000
-	out	(7),a
-	call	bsendbyte   ; send byte(H)
+	ld	a, #1		; bank bsendbyte into slot8000
+	out	(7), a
+	call	bsendbyte	; send byte(H)
 
 	pop	bc
 	pop	hl
 
-	inc	hl          ; i++   (next byte)
-	ld	a,h
-	cp	#C0
-	jr	nz,byteloop ; jump if i < #C000
+	inc	hl		; i++   (next byte)
+	ld	a, h
+	cp	#0xC0
+	jr	nz, byteloop	; jump if i < #C000
 
-	inc	c          ; currentpage++  (next page)
+	inc	c		; currentpage++  (next page)
 	djnz	pgloop
 
 	jp	done

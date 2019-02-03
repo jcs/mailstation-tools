@@ -19,38 +19,38 @@
 
 
 
-brecvbyte equ #8027			; Firmware function in codeflash page 1.  Attempts
-					; to receive a byte.  Upon returning, if a = 0, it
-					; timed out or failed.  Otherwise the l register
-					; holds the received byte.
+	.module	loader
 
-
-	org	#4000			; Apps always start at 0x4000 no matter what
+	.area	_DATA
+	.area	_HEADER (ABS)
+	.org 	0x4000			; Apps always start at 0x4000 no matter what
 					; dataflash page they load from.
 
 	jp	eventhandler		; Jump to the start of our code.
 
-	defw	icon			; The following is data about the app
-	defw	caption			; itself, most of which we won't even
-	defw	dunno			; worry about.
+ 	.dw	(icon)			; The following is data about the app
+ 	.dw	(caption)		; itself, most of which we won't even
+ 	.dw	(dunno)			; worry about.
 
 dunno:
-	defb	#00
+	.db	#0
 zip:
-	defw	#0000
+	.dw	#0
 zilch:
-	defw	#0000
-
+	.dw	#0
 caption:
-	defw	#0001
-	defw	endcap-caption-6
-	defw	#0006
-	defm	"Loader"		; The app icon label.
+	.dw	#0x0001
+	.dw	(endcap - caption - 6)	; num of chars
+	.dw	#0x0006			; offset to first char
+	.ascii	"Loader"		; the caption string
 endcap:
 
-icon:					; Except no icon for us!
+icon:
 
-
+	.equ	brecvbyte, #0x8027	; Firmware function in codeflash page 1.  Attempts
+					; to receive a byte.  Upon returning, if a = 0, it
+					; timed out or failed.  Otherwise the l register
+					; holds the received byte.
 
 ;----------------------------------------------------------
 ; Now for the actual code
@@ -68,7 +68,7 @@ getbyte:
 getbyte2:
 	call	brecvbyte	; Try to fetch a byte.
 	or	a		; If we didn't get one, try again.
-	jr	z, getbyte2
+	jp	z, getbyte2
 
 	ld	a, l		; Load received byte into A register
 
@@ -80,23 +80,21 @@ getbyte2:
 ;------
 
 eventhandler:
-
 	call	getbyte		; Get low byte of total bytes to download
 	ld	l, a
 
 	call	getbyte		; Get high byte of total bytes to download
 	ld	h, a
 
-
-	ld	bc, #8000	; Destination address
+	ld	bc, #0x8000	; Destination address
 nextcodebyte:
 	call	getbyte		; Fetch a byte of data
 
 	ld	d, a		; Preserve A
 
 	ld	a, #1		; Put ram page 1 into slot8000
-	out	(#08), a
-	out	(#07), a
+	out	(#0x08), a
+	out	(#0x07), a
 
 	ld	a, d		; Restore A
 
@@ -107,11 +105,9 @@ nextcodebyte:
 
 	xor	a		; Check if hl = 0; get another byte if not
 	or	h
-	jr	nz, nextcodebyte
+	jp	nz, nextcodebyte
 	xor	a
 	or	l
-	jr	nz, nextcodebyte
+	jp	nz, nextcodebyte
 
-
-	jp	#8000		; When done, jump to code!
-
+	jp	0x8000		; When done, jump to code!
