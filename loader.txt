@@ -343,11 +343,11 @@ probably a bunch of gibberish.  Either way, we're overwriting it at this point.
 Make sure you put in the backdoor code mentioned earlier, hit "s" to enter edit
 mode, and type in these bytes:
 
-C3 2D 40 1A 40 0E 40 09 40 00 00 00 00 00 01 00
-06 00 06 00 4C 6F 61 64 65 72 C5 E5 AF D3 08 3C
-D3 07 CD 27 80 B7 CA 22 40 7D E1 C1 C9 CD 1A 40
-6F CD 1A 40 67 01 00 80 CD 1A 40 57 3E 01 D3 08
-D3 07 7A 02 03 2B AF B4 C2 38 40 AF B5 C2 38 40
+C3 2D 40 1A 40 0E 40 09  40 00 00 00 00 00 01 00
+06 00 06 00 4C 6F 61 64  65 72 C5 E5 AF D3 08 3C
+D3 07 CD 27 80 B7 CA 22  40 7D E1 C1 C9 CD 1A 40
+6F CD 1A 40 67 01 00 80  CD 1A 40 57 3E 01 D3 08
+D3 07 7A 02 03 2B AF B4  C2 38 40 AF B5 C2 38 40
 C3 00 80
 
 This is the code from loaderapp.bin, if you're curious.  If you want to see the
