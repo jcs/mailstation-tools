@@ -10,14 +10,13 @@
 ; those, the actual data is transferred into ram page 1 in slot8000.  The total byte
 ; count is decremented, and when zero, it jumps to 0x8000 to run the transferred code.
 ;
-; This was written to be assembled using AS80, which can be found at:
+; This was originally written to be assembled using AS80, which can be found at:
 ;  http://www.kingswood-consulting.co.uk/assemblers/
-;
 ;
 ; - FyberOptic (fyberoptic@gmail.com)
 ;
-
-
+; This has been modified to be assembled with SDCC ASZ80.
+;
 
 	.module	loader
 
@@ -75,9 +74,6 @@ getbyte2:
 	pop	hl		; Restore BC, HL
 	pop	bc
 	ret
-
-
-;------
 
 eventhandler:
 	call	getbyte		; Get low byte of total bytes to download
