@@ -87,7 +87,7 @@
 ; *** Enter edit mode, enter at least the bytes for the JP of
 ;     the following code, and save the sector.  Goto step 3.
 
-	.module	spew
+	.module	codedump
 
 	.area	_DATA
 	.area	_HEADER (ABS)
@@ -108,9 +108,9 @@ zilch:
 	.db	#0
 caption:
 	.dw	#0x0001			; ?????
-	.dw	(endcap - caption - 6)	; num of chars
+	.dw	(endcap - caption - 6)	; end of chars
 	.dw	#0006			; offset to first char
-	.ascii	"Spew"			; the caption string
+	.ascii	"Code Dump"		; the caption string
 endcap:
 
 icon:
@@ -164,7 +164,7 @@ eventhandler:
 ; really handle any events, it just spews the rom contents
 ; over the laplink.
 
-	xor	a		; Set slot8000device = codeflash
+	xor	a		; set slot8000device = codeflash (0)
 	out	(8), a
 
 	ld	bc, #0x4000	; b=count=64 pages, c=currentpage=0
