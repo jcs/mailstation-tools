@@ -125,18 +125,25 @@ int main(int ARGC, void **ARGV)
 		return -1;
 	}
 
-	unsigned char bytereceived;
+	unsigned char b1, b2, b3, bytereceived;
 	int totalbytesreceived = 0;
 
 	printf("Waiting...");
 
 	while (totalbytesreceived < (1024*1024))	// Fetch 1MB
 	{
-		bytereceived = recvtribble() + (recvtribble() << 3) + ((recvtribble() & dibmask) << 6);
+		b1 = recvtribble();
+		b2 = recvtribble();
+		b3 = recvtribble();
+
+		bytereceived = b1 + (b2 << 3) + ((b3 & dibmask) << 6);
+		//printf("received byte: (0x%x, 0x%x, 0x%x) = 0x%x\r\n", b1, b2, b3, bytereceived);
+		
 		fputc ( bytereceived, pFile );
 		totalbytesreceived++;
-		printf("\rReceived: %d bytes (%d%%)	     ",
-			totalbytesreceived, (int)floor(((float)totalbytesreceived / (1024*1024))*100));
+		if (totalbytesreceived % 1000 == 0)
+			printf("\rReceived: %d bytes (%d%%)	     ",
+				totalbytesreceived, (int)floor(((float)totalbytesreceived / (1024*1024))*100));
 	}
 	fclose (pFile);
 
