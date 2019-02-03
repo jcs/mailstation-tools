@@ -1,0 +1,427 @@
+
+INTRO
+-----
+
+Loading code onto the Mailstation was once a lofty goal, but over time, some
+smart folk have figured out just how to do that.  And the ironic part, as it
+turns out, is that the Mailstation itself includes the code which facilitates
+doing so.
+
+Mind you, we aren't going to reflash the Mailstation, we're merely going to
+take advantage of some of its features to run arbitrary code.  This lets you
+keep the original firmware intact, without fear of bricking it, while still
+inserting a bit of permanent code onto it, which allows us to then easily
+transfer larger code via the parallel port into system memory.  This not only
+makes it easy for debugging, but it saves wear and tear on the flash memory.
+
+I'm not aware of the details on all the Mailstation models, but most of the
+older ones should work with this process just fine.  The only one that probably
+wouldn't is the 350.  Possibly the 300 as well.  I don't know anything about
+the latter, but I understand that the 350 uses an entirely different cpu.
+
+In any case, I'll go ahead and say the normal mumbo jumbo, where if you screw
+up and break your Mailstation, it's not my fault!  This is all "try at your own
+risk" sort of stuff.
+
+
+LAPLINK
+-------
+
+Using a parallel laplink cable is required for the transfers.  And
+forunately, this is the only extra hardware you require, short of a PC.  If you
+don't have the cable, there's lots of resources for making it on the internet.
+In fact, here's you a pinout that I had handy:
+
+ 1-1
+ 2-15
+ 3-13
+ 4-12
+ 5-10
+ 6-11
+ 8-NC
+ 9-NC
+ 10-5
+ 11-6
+ 12-4
+ 13-3
+ 14-14
+ 15-2
+ 16-16
+ 17-17
+ 18-NC
+ 19-NC
+ 20-NC
+ 21-NC
+ 22-NC
+ 24-NC
+ 24-NC
+ 25-25
+
+There's question over whether 1, 15, 16, and 17 are necessary, but it couldn't
+hurt to do them anyway in case something else wants them in the future that you
+try to use the cable on.
+
+
+HEX VIEWER
+----------
+
+Once you have a cable handy, the next question is "So how do I copy code from
+my computer to the Mailstation?"  Well we're not quite there yet.  We still
+have to put code onto the Mailstation to allow it to be able to copy your
+own code over.  We start by taking advantage of one of the Mailstation's
+hidden features: the hex editor.
+
+Accessing the hex editor seems to vary from model to model.  The first step
+is reaching the diagnostic screen.  On my original black DET1 running v3.03a
+firmware, the key combination is Function + Shift + T when powering the device
+on.  I got this information from the spew.txt on the Yahoo Mailstation group
+(http://tech.groups.yahoo.com/group/mailstation/), written by Cyrano Jones
+(who discovered much of what I will discuss here).  You can find it in the
+Files/Mailbug section.  Quoted from his file:
+
+"Enter test mode with vulcan nerve pinch while booting. <func><shift><t>, or
+<func><size><t> or on the newer models, <func><q><a>, then "qa781206", without
+the quotes, of course."
+
+Hopefully one of those will work for you.  Once you're into the diagnostic
+screen, press Shift + F5 to get into the hex editor.  The F keys are those gray
+rectangular ones beneath the screen.
+
+Keep in mind that this does not allow you to modify the codeflash on the
+device.  It's merely for the 512KB of dataflash, which is where the Mailstation
+stores all your email and settings and such.  Something else the Mailstation
+stores here however are third-party applications, particularly ones that were
+included from Yahoo, for getting weather and TV listings or whatever.  These
+weren't included with all Mailstations, but the functionality to use them
+apparently was.  This is what we're going to take advantage of to run code on
+the device, since aforementioned smart folk figured out the structure to these
+apps, allowing us to create our own.
+
+We're not ready to do so yet, but at any time, you can hit the Back button to
+exit the hex editor, and then press Q at the diagnostic menu to restart the
+Mailstation.  It prompts you at this point whether you want to clear the
+dataflash (much like when you remove power while the device is on), but just
+skip past that unless you really want to clear everything for some reason.
+
+
+APP RECORDS
+-----------
+
+First of all, we need to find out how many apps are already installed on your
+device, to know which area to place our own.  So while in the hex editor, press
+G to bring up the Goto prompt, and type in "020000", followed by pressing
+Enter.  This takes you to the location which stores info about how many
+apps are installed/where their code is stored/etc.  You may see nothing
+but zeroes along the top row, but this just means you have no apps (much like
+mine did).  Then again, you might have some stuff listed, which means you
+probably do have a couple.  Here's the known structure of the data starting at
+0x020000:
+
+nn ?? ?? ??       <-- number of apps
+xx 00 xx xx xx 18 <-- data for 1st app
+xx 01 xx xx xx 19 <-- data for 2nd app
+xx 02 xx xx xx 1a <-- data for 3rd app
+xx 03 xx xx xx 1b <-- data for 4th app
+xx 04 xx xx xx 1c <-- data for 5th app
+
+The first four bytes are header info, with only the first byte being known.  It
+holds the number of apps you have.  Immediately following that, you have
+records of six bytes each for each app.  It's believed that you can have five
+apps at most.  Most of these bytes are also unknown, but the second in each is
+the dataflash page number it resides on (out of 32 pages, 16KB each = 512KB),
+and the sixth byte is the app number.  The values for each app must be left as-
+is unless you know what you're doing.  You'll mostly only be changing the
+number of apps.
+
+
+HEX VIEWER TO HEX EDITOR
+------------------------
+
+Changing anything requires using the hex editor to actually edit, which,
+believe it or not, it can't do by default!  It's actually more of just a hex
+viewer upon startup.  But luckily they included a back door of sorts, which
+turns it into a true hex editor.
+
+To get into actual hex editor mode, press G for the Goto command, then type in
+this address: "710304x", minus quotes of course.  And don't forget the x at the
+end, even though you won't see it being typed.  Once you put this in, you don't
+have to press enter.  If you do, you'll lose your place.  Hit the Back button
+on the keyboard instead to return the editor, and you should still be at the
+0x020000 location.  And now you'll be in actual hex editor mode.
+
+To edit the current screen of data, you hit the "s" key on your keyboard.  The
+original instructions say control-s, or function-s, but just "s" worked for me.
+You can use the arrow keys to move around in the data, and type in new values
+in hex.  Pressing the "s" key again will save the current changes back to the
+dataflash.  You must do this before leaving the current screen of data, or
+you'll lose any changes.  Hitting the Back button will also result in losing
+changes.
+
+
+So now I'll break the instructions up:
+
+- Method A will be if you have Yahoo apps installed but wish to just overwrite
+one of them.
+
+- Method B will be if you have Yahoo apps but want to add a new one.
+
+- Method C will be if you have no apps at all and want to add one.
+
+
+METHOD A
+--------
+So you already have some apps installed, but don't care about those, and just
+want to take the easy route and overwrite one of them.  That's probably the
+easiest method.  It means you don't have to edit anything here at 0x020000, as
+long as you see data to at least indiciate one or more apps.  I expect you
+wouldn't have chosen method A if not.  But if this is your method, we'll
+replace the first app, so for future reference, you need to remember that
+you'll be using dataflash page 0 to put your actual app in.  All you need to do
+now is go to the LOADER APP section.
+
+If you plan to add more apps in the future though, I suggest reading METHOD B
+as well.
+
+
+METHOD B
+--------
+This section will be slightly tricky, but mostly just because it might mean
+some counting.  You probably already have two apps installed (which is what
+will be assumed for most of this section), and while you might think it's a
+simple matter of changing that "2" to a "3" at the beginning of the apps
+header, it's not quite.  If you did think that though, you were partially
+right, because you certainly will need to increment that first value at
+0x020000.  Go ahead and do so.  Use the instructions from earlier to make sure
+you're in actual hex editor mode if necessary, then just type over that value
+with your new one.  If you had two apps, it should now show that you have
+three.
+
+In fact, at this point, if you saved the data (pressing "s") and went back and
+looked in the Extras section on the Mailstation, you'd likely see a third extra
+app over on the second page of apps, just minus an icon or name.  It would be
+selectable though, which would indiciate what you've done so far worked.  If
+you do go check this out though, make sure you follow all the previous
+instructions again to make it back to this point in the hex editor at 0x020000.
+
+Now is the counting part I mentioned.  The problem with preinstalled apps is
+that there's only an app record for just the apps installed.  That means we
+need to add a new one at the end of that, so that it'll know what page of
+dataflash the code is in and such when you run the third app.  If you run the
+third app without this data specified, it'll almost always run the first Yahoo
+app (or whatever app you have in that location).
+
+So we're going to assume you have two apps already installed, and are wanting
+to add a third.  This means counting over past the six-byte app records for the
+two apps already installed in order to add the bytes for the third.  Remember
+that the app info area is formatted like this:
+
+[4 bytes header][6 bytes of app record 1][6 bytes of app record 2]
+
+The very first byte in the first four of course being the number of apps
+installed, which you should have already changed.  We need to add another six
+bytes at the end of all of this.  If you only had one app installed, you'd have
+to count over until past the last byte of the first app record, but luckily,
+having two apps installed means 16 bytes total (4 + 6 + 6).  The hex editor
+shows 16 bytes per line.  This means that instead of counting, you can simply
+go to the second line on the screen, aka address 0x020010.  If you only had one
+app already, you'd have to count over to 0x02000A.
+
+Now, what you put at this location is dependant on the app number you're about
+to install.  From earlier, this is the known structure of the app records:
+
+xx 00 xx xx xx 18 <-- data for 1st app
+xx 01 xx xx xx 19 <-- data for 2nd app
+xx 02 xx xx xx 1a <-- data for 3rd app
+xx 03 xx xx xx 1b <-- data for 4th app
+xx 04 xx xx xx 1c <-- data for 5th app
+
+If you have two apps installed already, then it's the data for the third app
+you need to put in.  Since we don't know what the "xx" values are for, use
+"00".  It works fine for me.  So, for example, if you're adding in app three,
+you'd go to the second line on the screen when at 0x020000(aka address
+0x020010 now), and put in the following bytes:  "00 02 00 00 00 1a".  These
+bytes tell it to go to dataflash page 2 to run the app, and that the internal
+app number is 1a.  The latter isn't important to us (but is important to
+include).
+
+What is important though is that you remember the dataflash page number from
+the line you add.  This is because you have to know which page your app will
+run in, in order to know which page to put the code, later in the LOADER APP
+section.  If you put it in the wrong page, it naturally won't run.
+
+While you're here, you might want to go ahead and add in the remaining bytes
+necessary to identify the rest of the five total apps.  This will be useful if
+you want to add in more apps in the future, and would later require you to only
+change the first byte in this area, aka the number of apps, when adding
+another.  So for example, if you just added in app three using the previous
+instructions, then all you need to do is type in the data for apps four and
+five right afterward.
+
+Don't forget to press "s" again to save your changes!  Now, with your proper
+dataflash page number in mind, go on to the LOADER APP section.
+
+
+METHOD C
+--------
+This method is probably the second easiest aside from A, because it just means
+typing in bytes.  You're probably here if you have no apps installed, or if you
+just don't care enough about the Yahoo apps to worry about them being there at
+all.
+
+So, make sure you're in actual hex editor mode, and that you're at location
+0x020000.  We're going to add in the app header, and all five app records.
+This means that if you decide to add more apps in the future, all you have
+to do is increment the first byte, since all the proper app records will
+already be in place.
+
+So, at 0x20000, we want to put in the following bytes:
+
+01 00 00 00 00 00 00 00 00 18 00 00 00 00 00 18
+00 01 00 00 00 19 00 02 00 00 00 1a 00 03 00 00
+00 1b 00 04 00 00 00 1c
+
+The first byte obviously indicates we should now have one app.  Make sure to
+hit "s" to save all this!  It couldn't hurt to verify you typed in the proper
+bytes, as well.  If you want to see if it worked, exit out of the hex editor,
+and go to the Extras area on your Mailstation.  On the right, you should now
+have a new app, with no icon or label, but it should be selectable.  Running it
+at the moment will probably crash your Mailstation though.
+
+Since this will be your first app, you'll be installing the code into dataflash
+page 0.  Remember this value, then head on to the next section, LOADER APP.
+
+
+LOADER APP
+----------
+
+Okay, if you used methods B or C, you should have modified the apps header to
+specify the new number of apps, and added any necessary app records to be able
+to have your own apps.
+
+And no matter what method you used, you should know your dataflash page number to
+put the actual app at.
+
+This is where we're going to put the actual code!  It also holds icon and icon
+label data, but we're not going to put an icon, just for the sake of typing
+less bytes in.  Yes, you have to type in every byte of code for this manually,
+like in the old days.  This is why the code is going to be as brief and to the
+point as possible.  Its sole purpose will be loading code from your PC to the
+Mailstation, and running it.  In fact, it won't even display anything on the
+screen while it's doing it!  But we'll know it if it's loading, because the
+host loader app on the PC side will show us.
+
+In any case, let's put in some code.  The first step is determining the
+location in the hex editor to go in order to do it.  See, when you launch the
+app via the Mailstation, it looks in the app record and determines the
+dataflash page to load into slot4000 (16KB from 0x4000-0x7FFF in the
+Mailstation address space).  As mentioned earlier, the dataflash is 512KB,
+resulting in 32 "pages" of flash that can be put into slot4000 (or slot8000 for
+that matter).  Some of the later pages though are used for storing email and
+all that, so we wouldn't want to mess with those.  You've already told
+it what page numbers each app uses anyway when you put in the app records
+earlier, and the Mailstation knows not to store anything important in those
+pages apparently.
+
+So this just takes a little math to determine the actual starting address in
+the dataflash that you need to put your code in.  You basically just multiply
+your page number by 0x4000.  So page 0 would be address 0x0000, page 1 would be
+0x4000, page 2 would be 0x8000, etc.
+
+I'll make it easy for you actually.  If you're using method A or C, your
+address will be 0x0000.  If you're using Method B, it's PROBABLY going to be
+0x8000, if you already had two apps installed.  If you had some odd amount of
+apps installed, calculate accordingly.
+
+Now that you know your starting address in the dataflash, that's where we need
+to go.  Using the Goto command in the hex editor, just punch in your address.
+Make sure you add enough zeroes into the blank, since it holds six characters.
+0x4000 would be "004000", for example.
+
+Now you're at the starting address of where your app should be!  It's probably
+a bunch of zeroes.  If you're overwriting a pre-existing Yahoo app, then it's
+probably a bunch of gibberish.  Either way, we're overwriting it at this point.
+Make sure you put in the backdoor code mentioned earlier, hit "s" to enter edit
+mode, and type in these bytes:
+
+C3 2D 40 1A 40 0E 40 09 40 00 00 00 00 00 01 00
+06 00 06 00 4C 6F 61 64 65 72 C5 E5 AF D3 08 3C
+D3 07 CD 27 80 B7 CA 22 40 7D E1 C1 C9 CD 1A 40
+6F CD 1A 40 67 01 00 80 CD 1A 40 57 3E 01 D3 08
+D3 07 7A 02 03 2B AF B4 C2 38 40 AF B5 C2 38 40
+C3 00 80
+
+This is the code from loaderapp.bin, if you're curious.  If you want to see the
+source to have some idea what it's doing, look at loaderapp.asm.
+
+You might want to visually verify your bytes, because it's extremely easy to
+make a mistake.  One wrong letter or number could mess up the entire program.
+
+That's it!  If you haven't already, hit "s" to save.  Now you can go back out
+of the hex editor and into the Mailstation, look in the Extras area, and you
+should see the "Loader" app.  If this is your first app, it'll be on the first
+page.  If you already had some apps, it'll be on the second page.
+
+Keep in mind that running this won't do anything until you actually try to send
+code to it.  It'll actually seem like it's frozen up (since it's constantly
+waiting for a byte from the parallel port).  And if something ever goes wrong
+during a transfer (which can happen occasionally), you'll have to reset the
+Mailstation either with the reset button on back, or cycling the power.
+
+Now to send your own code to it!
+
+
+MAILSEND
+--------
+Mailsend is the other side of the transfer process that I wrote, which you run
+on your PC.  It's a command-line Windows app.
+
+That said, open up a command prompt window, and navigate to where you put all
+the files.  Sometimes it's easiest to just put it all in c:\mailstation, which
+is what I do.
+
+Mailsend assumes your PC's parallel port runs on the fairly standard port
+0x378.  If not, you're going to have some problems.  I have no idea if this is
+compatible with those USB->Parallel dongles out there, either.  But almost
+every computer still made has a parallel port built into it, which should work
+with this just fine.
+
+To try it out, run "mailsend fyos_bin.bin" on the PC.  It'll prompt you to
+press enter to continue.  At this point, you need to run Loader on the
+Mailstation.  Doing so won't give you any sort of visual indication, but you'll
+know it's working here in a second.  Once Loader is running, hit return on the
+PC.  You should start to see a byte counter as it transfers data to the
+Mailstation.  When it's done, it'll return to the command prompt, and your
+Mailstation should be running whatever you just send to it.  In this case,
+FyOS.  If so, then congratulations, you can now transfer any binary file to the
+Mailstation!
+
+
+THE END?
+--------
+
+It's important to remember that your code is loaded into slot8000 (16KB from
+0x8000 to 0xBFFF), in ram page 1.  0xC000 to 0xFFFF is ram page 0, which is
+fixed and can't be swapped (as far as we know).  The Mailstation uses page
+0 to store variables and such for its own code.  This means you should keep
+the binaries you send less than 16KB, or you'll overwrite that stuff.  If
+that's your intention, then fine, but keep in mind that interrupts are not
+disabled in the Loader app, meaning parts of the code you send that span
+past 0xC000 could get overwritten before it even gets a chance to execute.  You
+could modify Loader to disable them however (then reassemble it, and type in
+the bytes again of course), but you should know what you're doing in such a
+case.  No interrupts means no keyboard support via the firmware routines, for
+example.
+
+That's about it for this tutorial.  If you have any questions/comments, feel
+free to let me know at fyberoptic@gmail.com.  As mentioned in the readme, I
+also frequent the Yahoo group, where others might be able to help you as well:
+
+http://tech.groups.yahoo.com/group/mailstation/
+
+Have fun!
+
+
+ - FyberOptic
+
+
+
