@@ -2,15 +2,15 @@
  *	Maildump.cpp
  *	------------
  *
- *	This should dump your Mailstation's codeflash, in combination
- *	with Cyrano Jones' "spew.txt" app for the Mailstation, and
- *	a laplink cable of course.
+ *	This should dump your Mailstation's codeflash or dataflash, in
+ *	combination with the codedump.asm or datadump.asm app for the
+ *	Mailstation, and a laplink cable of course.
  *
  *	Basic use would be as follows:
  *	1.) connect laplink cable to MS and PC
  *	2.) turn on MS
- *	3.) run maildump on PC
- *	4.) run spew on MS
+ *	3.) run "maildump /code" on PC
+ *	4.) run codedump on MS
  *
  *	The MS should be on first to ensure parallel port signals are
  *	reset, otherwise your dump could be bad.  If you think you
@@ -18,19 +18,18 @@
  *	on again, waiting for the main menu to show up, just to make
  *	sure it resets itself before you start listening for data.
  *
- *	The dump should be 1,048,576 bytes (1MB), and named "ms.bin",
- *	which is automatically overwritten everytime you run the
- *	program.
+ *	A dump of the codeflash should be 1,048,576 bytes (1MB), and named
+ *	"codeflash.bin", which is automatically overwritten everytime you run
+ *	the program.
+ *
+ *	A dump of the dataflash should be 524,288 bytes (512Kb), and named
+ *	"dataflash.bin", which is automatically overwritten everytime you run
+ *	the program.
  *
  *	This is based around Cyrano Jones' unit_tribbles in Pascal,
- *	but written to work under Windows (tested under XP) thanks
+ *	but written to work under Windows (tested under 98 and XP) thanks
  *	to inpout32.dll, which doesn't require a separate driver
  *	to interface with I/O ports.  It's pretty useful!
- *
- *	Spew.txt can be gotten from the Yahoo Mailstation group's file
- *	section:
- *	http://tech.groups.yahoo.com/group/mailstation/files/Mailbug/
- *
  *
  *	- FyberOptic (fyberoptic@...)
  *
@@ -59,18 +58,20 @@ typedef void (_stdcall *oupfuncPtr)(short portaddr, short datum);
 inpfuncPtr inp32fp;
 oupfuncPtr oup32fp;
 
-short  Inp32 (short portaddr)
+short
+Inp32(short portaddr)
 {
 	return (inp32fp)(portaddr);
 }
 
-void  Out32 (short portaddr, short datum)
+void
+Out32(short portaddr, short datum)
 {
 	(oup32fp)(portaddr,datum);
 }
 
-
-int InitIOLibrary()
+int
+InitIOLibrary(void)
 {
 	HINSTANCE hLib;
 
@@ -81,14 +82,14 @@ int InitIOLibrary()
 		return -1;
 	}
 
-	inp32fp = (inpfuncPtr) GetProcAddress(hLib, "Inp32");
+	inp32fp = (inpfuncPtr)GetProcAddress(hLib, "Inp32");
 
 	if (inp32fp == NULL) {
 		fprintf(stderr,"GetProcAddress for Inp32 Failed.\n");
 		return -1;
 	}
 
-	oup32fp = (oupfuncPtr) GetProcAddress(hLib, "Out32");
+	oup32fp = (oupfuncPtr)GetProcAddress(hLib, "Out32");
 
 	if (oup32fp == NULL) {
 		fprintf(stderr,"GetProcAddress for Oup32 Failed.\n");
@@ -96,59 +97,100 @@ int InitIOLibrary()
 	}
 }
 
-
-
-unsigned char recvtribble()
+unsigned char
+recvtribble(void)
 {
-	Out32(DATA,0);  // drop busy/ack
-	while ((Inp32(STATUS) & stbin) != 0) {}	 // wait for (inverted) strobe
-	unsigned char mytribble = (Inp32(STATUS) >> 3) & tribmask;       // grab tribble
-	Out32(DATA,bsyout);	     // raise busy/ack
-	while ((Inp32(STATUS) & stbin) == 0) {}	 // wait for (inverted) UNstrobe
+	unsigned char mytribble;
+
+	// drop busy/ack
+	Out32(DATA,0);
+
+	// wait for (inverted) strobe
+	while ((Inp32(STATUS) & stbin) != 0)
+		;
+
+	// grab tribble
+	mytribble = (Inp32(STATUS) >> 3) & tribmask;
+
+	// raise busy/ack
+	Out32(DATA,bsyout);
+
+	// wait for (inverted) UNstrobe
+	while ((Inp32(STATUS) & stbin) == 0)
+		;
 
 	return mytribble;
 }
 
-
-
-int main(int ARGC, void **ARGV)
+int
+main(int argc, void **argv)
 {
+	FILE *pFile;
+	unsigned int received = 0, expected = 0;
+	unsigned char t1, t2, t3, b;
+	char fn[14];
+	int codeflash = 0, dataflash = 0;
+	int x;
 
-	if (!InitIOLibrary()) { printf("Failed to initialize port I/O library\n"); return -1; }
+	for (x = 1; x < argc; x++) {
+		if (strcmp((char *)argv[x], "/code") == 0)
+			codeflash = 1;
+		else if (strcmp((char *)argv[x], "/data") == 0)
+			dataflash = 1;
+		else
+			printf("unknown parameter: %s\n", argv[x]);
+	}
 
-	FILE * pFile;
+	if (codeflash == dataflash) {
+		printf("usage: %s [/code | /data]\n", argv[0]);
+		return 1;
+	}
 
-	pFile = fopen ("ms.bin" , "wb");
-	if (!pFile)
-	{
-		printf("Couldn't open file\n");
+	if (codeflash) {
+		expected = 1024 * 1024;
+		strncpy(fn, "codeflash.bin", sizeof(fn));
+	} else if (dataflash) {
+		expected = 1024 * 512;
+		strncpy(fn, "dataflash.bin", sizeof(fn));
+	}
+
+	if (!InitIOLibrary()) {
+		printf("Failed to initialize port I/O library\n");
+		return -1;
+	}
+	
+	pFile = fopen(fn, "wb");
+	if (!pFile) {
+		printf("couldn't open file %s\n", fn);
 		return -1;
 	}
 
-	unsigned char b1, b2, b3, bytereceived;
-	int totalbytesreceived = 0;
+	printf("waiting to dump to %s...", fn);
 
-	printf("Waiting...");
+	while (received < expected)	{
+		t1 = recvtribble();
+		t2 = recvtribble();
+		t3 = recvtribble();
 
-	while (totalbytesreceived < (1024*1024))	// Fetch 1MB
-	{
-		b1 = recvtribble();
-		b2 = recvtribble();
-		b3 = recvtribble();
+		b = t1 + (t2 << 3) + ((t3 & dibmask) << 6);
 
-		bytereceived = b1 + (b2 << 3) + ((b3 & dibmask) << 6);
-		//printf("received byte: (0x%x, 0x%x, 0x%x) = 0x%x\r\n", b1, b2, b3, bytereceived);
-		
-		fputc ( bytereceived, pFile );
-		totalbytesreceived++;
-		if (totalbytesreceived % 1000 == 0)
-			printf("\rReceived: %d bytes (%d%%)	     ",
-				totalbytesreceived, (int)floor(((float)totalbytesreceived / (1024*1024))*100));
+		if (received == 0)
+			printf("\n");
+
+		if (0) {
+			printf("[%08d] received 0x%x, 0x%x, 0x%x = 0x%x\r\n", received, t1, t2, t3, b);
+		}
+
+		fputc(b, pFile);
+		received++;
+
+		if (received % 1024 == 0 || received == expected)
+			printf("\rreceived: %07d/%07d", received, expected);
 	}
-	fclose (pFile);
+	fclose(pFile);
 
 	printf("\n");
-	return 0;
 
+	return 0;
 }
 
