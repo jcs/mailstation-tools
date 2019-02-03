@@ -1,0 +1,1268 @@
+00           nop
+01 xx xx     ld bc, nn
+02           ld (bc), a
+03           inc bc
+04           inc b
+05           dec b
+06 xx        ld b, n
+07           rlca
+08           ex af, af'
+09           add hl, bc
+0a           ld a, (bc)
+0b           dec bc
+0c           inc c
+0d           dec c
+0e xx        ld c, n
+0f           rrca
+10 xx        djnz e
+11 xx xx     ld de, nn
+12           ld (de), a
+13           inc de
+14           inc d
+15           dec d
+16 xx        ld d, n
+17           rla
+18 xx        jr e
+19           add hl, de
+1a           ld a, (de)
+1b           dec de
+1c           inc e
+1d           dec e
+1e xx        ld e, n
+1f           rra
+20 xx        jr nz, e
+21 xx xx     ld hl, nn
+22 xx xx     ld (nn), hl
+23           inc hl
+24           inc h
+25           dec h
+26 xx        ld h, n
+27           daa
+28 xx        jr z, e
+29           add hl, hl
+2a xx xx     ld hl, (nn)
+2b           dec hl
+2c           inc l
+2d           dec l
+2e xx        ld l, n
+2f           cpl
+30 xx        jr nc, e
+31 xx xx     ld sp, nn
+32 xx xx     ld (nn), a
+33           inc sp
+34           inc (hl)
+35           dec (hl)
+36 xx        ld (hl), n
+37           scf
+38 xx        jr c, e
+39           add hl, sp
+3a xx xx     ld a, (nn)
+3b           dec sp
+3c           inc a
+3d           dec a
+3e xx        ld a, n
+3f           ccf
+40           ld b, b
+41           ld b, c
+42           ld b, d
+43           ld b, e
+44           ld b, h
+45           ld b, l
+46           ld b, (hl)
+47           ld b, a
+48           ld c, b
+49           ld c, c
+4a           ld c, d
+4b           ld c, e
+4c           ld c, h
+4d           ld c, l
+4e           ld c, (hl)
+4f           ld c, a
+50           ld d, b
+51           ld d, c
+52           ld d, d
+53           ld d, e
+54           ld d, h
+55           ld d, l
+56           ld d, (hl)
+57           ld d, a
+58           ld e, b
+59           ld e, c
+5a           ld e, d
+5b           ld e, e
+5c           ld e, h
+5d           ld e, l
+5e           ld e, (hl)
+5f           ld e, a
+60           ld h, b
+61           ld h, c
+62           ld h, d
+63           ld h, e
+64           ld h, h
+65           ld h, l
+66           ld h, (hl)
+67           ld h, a
+68           ld l, b
+69           ld l, c
+6a           ld l, d
+6b           ld l, e
+6c           ld l, h
+6d           ld l, l
+6e           ld l, (hl)
+6f           ld l, a
+70           ld (hl), b
+71           ld (hl), c
+72           ld (hl), d
+73           ld (hl), e
+74           ld (hl), h
+75           ld (hl), l
+76           halt
+77           ld (hl), a
+78           ld a, b
+79           ld a, c
+7a           ld a, d
+7b           ld a, e
+7c           ld a, h
+7d           ld a, l
+7e           ld a, (hl)
+7f           ld a, a
+80           add b
+81           add c
+82           add d
+83           add e
+84           add h
+85           add l
+86           add (hl)
+87           add a
+88           adc b
+89           adc c
+8a           adc d
+8b           adc e
+8c           adc h
+8d           adc l
+8e           adc (hl)
+8f           adc a
+90           sub b
+91           sub c
+92           sub d
+93           sub e
+94           sub h
+95           sub l
+96           sub (hl)
+97           sub a
+98           sbc b
+99           sbc c
+9a           sbc d
+9b           sbc e
+9c           sbc h
+9d           sbc l
+9e           sbc (hl)
+9f           sbc a
+a0           and b
+a1           and c
+a2           and d
+a3           and e
+a4           and h
+a5           and l
+a6           and (hl)
+a7           and a
+a8           xor b
+a9           xor c
+aa           xor d
+ab           xor e
+ac           xor h
+ad           xor l
+ae           xor (hl)
+af           xor a
+b0           or b
+b1           or c
+b2           or d
+b3           or e
+b4           or h
+b5           or l
+b6           or (hl)
+b7           or a
+b8           cp b
+b9           cp c
+ba           cp d
+bb           cp e
+bc           cp h
+bd           cp l
+be           cp (hl)
+bf           cp a
+c0           ret nz
+c1           pop bc
+c2 xx xx     jp nz, nn
+c3 xx xx     jp nn
+c4 xx xx     call nz, nn
+c5           push bc
+c6 xx        add n
+c7           rst 00
+c8           ret z
+c9           ret
+ca xx xx     jp z, nn
+cb 00        rlc b
+cb 01        rlc c
+cb 02        rlc d
+cb 03        rlc e
+cb 04        rlc h
+cb 05        rlc l
+cb 06        rlc (hl)
+cb 07        rlc a
+cb 08        rrc b
+cb 09        rrc c
+cb 0a        rrc d
+cb 0b        rrc e
+cb 0c        rrc h
+cb 0d        rrc l
+cb 0e        rrc (hl)
+cb 0f        rrc a
+cb 10        rl b
+cb 11        rl c
+cb 12        rl d
+cb 13        rl e
+cb 14        rl h
+cb 15        rl l
+cb 16        rl (hl)
+cb 17        rl a
+cb 18        rr b
+cb 19        rr c
+cb 1a        rr d
+cb 1b        rr e
+cb 1c        rr h
+cb 1d        rr l
+cb 1e        rr (hl)
+cb 1f        rr a
+cb 20        sla b
+cb 21        sla c
+cb 22        sla d
+cb 23        sla e
+cb 24        sla h
+cb 25        sla l
+cb 26        sla (hl)
+cb 27        sla a
+cb 28        sra b
+cb 29        sra c
+cb 2a        sra d
+cb 2b        sra e
+cb 2c        sra h
+cb 2d        sra l
+cb 2e        sra (hl)
+cb 2f        sra a
+cb 30        sll b
+cb 31        sll c
+cb 32        sll d
+cb 33        sll e
+cb 34        sll h
+cb 35        sll l
+cb 36        sll (hl)
+cb 37        sll a
+cb 38        srl b
+cb 39        srl c
+cb 3a        srl d
+cb 3b        srl e
+cb 3c        srl h
+cb 3d        srl l
+cb 3e        srl (hl)
+cb 3f        srl a
+cb 40        bit 0, b
+cb 41        bit 0, c
+cb 42        bit 0, d
+cb 43        bit 0, e
+cb 44        bit 0, h
+cb 45        bit 0, l
+cb 46        bit 0, (hl)
+cb 47        bit 0, a
+cb 48        bit 1, b
+cb 49        bit 1, c
+cb 4a        bit 1, d
+cb 4b        bit 1, e
+cb 4c        bit 1, h
+cb 4d        bit 1, l
+cb 4e        bit 1, (hl)
+cb 4f        bit 1, a
+cb 50        bit 2, b
+cb 51        bit 2, c
+cb 52        bit 2, d
+cb 53        bit 2, e
+cb 54        bit 2, h
+cb 55        bit 2, l
+cb 56        bit 2, (hl)
+cb 57        bit 2, a
+cb 58        bit 3, b
+cb 59        bit 3, c
+cb 5a        bit 3, d
+cb 5b        bit 3, e
+cb 5c        bit 3, h
+cb 5d        bit 3, l
+cb 5e        bit 3, (hl)
+cb 5f        bit 3, a
+cb 60        bit 4, b
+cb 61        bit 4, c
+cb 62        bit 4, d
+cb 63        bit 4, e
+cb 64        bit 4, h
+cb 65        bit 4, l
+cb 66        bit 4, (hl)
+cb 67        bit 4, a
+cb 68        bit 5, b
+cb 69        bit 5, c
+cb 6a        bit 5, d
+cb 6b        bit 5, e
+cb 6c        bit 5, h
+cb 6d        bit 5, l
+cb 6e        bit 5, (hl)
+cb 6f        bit 5, a
+cb 70        bit 6, b
+cb 71        bit 6, c
+cb 72        bit 6, d
+cb 73        bit 6, e
+cb 74        bit 6, h
+cb 75        bit 6, l
+cb 76        bit 6, (hl)
+cb 77        bit 6, a
+cb 78        bit 7, b
+cb 79        bit 7, c
+cb 7a        bit 7, d
+cb 7b        bit 7, e
+cb 7c        bit 7, h
+cb 7d        bit 7, l
+cb 7e        bit 7, (hl)
+cb 7f        bit 7, a
+cb 80        res 0, b
+cb 81        res 0, c
+cb 82        res 0, d
+cb 83        res 0, e
+cb 84        res 0, h
+cb 85        res 0, l
+cb 86        res 0, (hl)
+cb 87        res 0, a
+cb 88        res 1, b
+cb 89        res 1, c
+cb 8a        res 1, d
+cb 8b        res 1, e
+cb 8c        res 1, h
+cb 8d        res 1, l
+cb 8e        res 1, (hl)
+cb 8f        res 1, a
+cb 90        res 2, b
+cb 91        res 2, c
+cb 92        res 2, d
+cb 93        res 2, e
+cb 94        res 2, h
+cb 95        res 2, l
+cb 96        res 2, (hl)
+cb 97        res 2, a
+cb 98        res 3, b
+cb 99        res 3, c
+cb 9a        res 3, d
+cb 9b        res 3, e
+cb 9c        res 3, h
+cb 9d        res 3, l
+cb 9e        res 3, (hl)
+cb 9f        res 3, a
+cb a0        res 4, b
+cb a1        res 4, c
+cb a2        res 4, d
+cb a3        res 4, e
+cb a4        res 4, h
+cb a5        res 4, l
+cb a6        res 4, (hl)
+cb a7        res 4, a
+cb a8        res 5, b
+cb a9        res 5, c
+cb aa        res 5, d
+cb ab        res 5, e
+cb ac        res 5, h
+cb ad        res 5, l
+cb ae        res 5, (hl)
+cb af        res 5, a
+cb b0        res 6, b
+cb b1        res 6, c
+cb b2        res 6, d
+cb b3        res 6, e
+cb b4        res 6, h
+cb b5        res 6, l
+cb b6        res 6, (hl)
+cb b7        res 6, a
+cb b8        res 7, b
+cb b9        res 7, c
+cb ba        res 7, d
+cb bb        res 7, e
+cb bc        res 7, h
+cb bd        res 7, l
+cb be        res 7, (hl)
+cb bf        res 7, a
+cb c0        set 0, b
+cb c1        set 0, c
+cb c2        set 0, d
+cb c3        set 0, e
+cb c4        set 0, h
+cb c5        set 0, l
+cb c6        set 0, (hl)
+cb c7        set 0, a
+cb c8        set 1, b
+cb c9        set 1, c
+cb ca        set 1, d
+cb cb        set 1, e
+cb cc        set 1, h
+cb cd        set 1, l
+cb ce        set 1, (hl)
+cb cf        set 1, a
+cb d0        set 2, b
+cb d1        set 2, c
+cb d2        set 2, d
+cb d3        set 2, e
+cb d4        set 2, h
+cb d5        set 2, l
+cb d6        set 2, (hl)
+cb d7        set 2, a
+cb d8        set 3, b
+cb d9        set 3, c
+cb da        set 3, d
+cb db        set 3, e
+cb dc        set 3, h
+cb dd        set 3, l
+cb de        set 3, (hl)
+cb df        set 3, a
+cb e0        set 4, b
+cb e1        set 4, c
+cb e2        set 4, d
+cb e3        set 4, e
+cb e4        set 4, h
+cb e5        set 4, l
+cb e6        set 4, (hl)
+cb e7        set 4, a
+cb e8        set 5, b
+cb e9        set 5, c
+cb ea        set 5, d
+cb eb        set 5, e
+cb ec        set 5, h
+cb ed        set 5, l
+cb ee        set 5, (hl)
+cb ef        set 5, a
+cb f0        set 6, b
+cb f1        set 6, c
+cb f2        set 6, d
+cb f3        set 6, e
+cb f4        set 6, h
+cb f5        set 6, l
+cb f6        set 6, (hl)
+cb f7        set 6, a
+cb f8        set 7, b
+cb f9        set 7, c
+cb fa        set 7, d
+cb fb        set 7, e
+cb fc        set 7, h
+cb fd        set 7, l
+cb fe        set 7, (hl)
+cb ff        set 7, a
+cc xx xx     call z, nn
+cd xx xx     call nn
+ce xx        adc n
+cf           rst 08
+d0           ret nc
+d1           pop de
+d2 xx xx     jp nc, nn
+d3 xx        out (n), a
+d4 xx xx     call nc, nn
+d5           push de
+d6 xx        sub n
+d7           rst 10
+d8           ret c
+d9           exx
+da xx xx     jp c, nn
+db xx        in a, (n)
+dc xx xx     call c, nn
+dd 09        add ix, bc
+dd 19        add ix, de
+dd 21 xx xx  ld ix, nn
+dd 22 xx xx  ld (nn), ix
+dd 23        inc ix
+dd 24        inc ixh
+dd 25        dec ixh
+dd 26 xx     ld ixh, n
+dd 29        add ix, ix
+dd 2a xx xx  ld ix, (nn)
+dd 2b        dec ix
+dd 2c        inc ixl
+dd 2d        dec ixl
+dd 2e xx     ld ixl, n
+dd 34 xx     inc (ix+d)
+dd 35 xx     dec (ix+d)
+dd 36 xx xx  ld (ix+d), n
+dd 39        add ix, sp
+dd 44        ld b, ixh
+dd 45        ld b, ixl
+dd 46 xx     ld b, (ix+d)
+dd 4c        ld c, ixh
+dd 4d        ld c, ixl
+dd 4e xx     ld c, (ix+d)
+dd 54        ld d, ixh
+dd 55        ld d, ixl
+dd 56 xx     ld d, (ix+d)
+dd 5c        ld e, ixh
+dd 5d        ld e, ixl
+dd 5e xx     ld e, (ix+d)
+dd 60        ld ixh, b
+dd 61        ld ixh, c
+dd 62        ld ixh, d
+dd 63        ld ixh, e
+dd 64        ld ixh, ixh
+dd 65        ld ixh, ixl
+dd 66 xx     ld h, (ix+d)
+dd 67        ld ixh, a
+dd 68        ld ixl, b
+dd 69        ld ixl, c
+dd 6a        ld ixl, d
+dd 6b        ld ixl, e
+dd 6c        ld ixl, ixh
+dd 6d        ld ixl, ixl
+dd 6e xx     ld l, (ix+d)
+dd 6f        ld ixl, a
+dd 70 xx     ld (ix+d), b
+dd 71 xx     ld (ix+d), c
+dd 72 xx     ld (ix+d), d
+dd 73 xx     ld (ix+d), e
+dd 74 xx     ld (ix+d), h
+dd 75 xx     ld (ix+d), l
+dd 77 xx     ld (ix+d), a
+dd 7c        ld a, ixh
+dd 7d        ld a, ixl
+dd 7e xx     ld a, (ix+d)
+dd 84        add ixh
+dd 85        add ixl
+dd 86 xx     add (ix+d)
+dd 8c        adc ixh
+dd 8d        adc ixl
+dd 8e xx     adc (ix+d)
+dd 94        sub ixh
+dd 95        sub ixl
+dd 96 xx     sub (ix+d)
+dd 9c        sbc ixh
+dd 9d        sbc ixl
+dd 9e xx     sbc (ix+d)
+dd a4        and ixh
+dd a5        and ixl
+dd a6 xx     and (ix+d)
+dd ac        xor ixh
+dd ad        xor ixl
+dd ae xx     xor (ix+d)
+dd b4        or ixh
+dd b5        or ixl
+dd b6 xx     or (ix+d)
+dd bc        cp ixh
+dd bd        cp ixl
+dd be xx     cp (ix+d)
+dd cb xx 00  rlc (ix+d), b
+dd cb xx 01  rlc (ix+d), c
+dd cb xx 02  rlc (ix+d), d
+dd cb xx 03  rlc (ix+d), e
+dd cb xx 04  rlc (ix+d), h
+dd cb xx 05  rlc (ix+d), l
+dd cb xx 06  rlc (ix+d)
+dd cb xx 07  rlc (ix+d), a
+dd cb xx 08  rrc (ix+d), b
+dd cb xx 09  rrc (ix+d), c
+dd cb xx 0a  rrc (ix+d), d
+dd cb xx 0b  rrc (ix+d), e
+dd cb xx 0c  rrc (ix+d), h
+dd cb xx 0d  rrc (ix+d), l
+dd cb xx 0e  rrc (ix+d)
+dd cb xx 0f  rrc (ix+d), a
+dd cb xx 10  rl (ix+d), b
+dd cb xx 11  rl (ix+d), c
+dd cb xx 12  rl (ix+d), d
+dd cb xx 13  rl (ix+d), e
+dd cb xx 14  rl (ix+d), h
+dd cb xx 15  rl (ix+d), l
+dd cb xx 16  rl (ix+d)
+dd cb xx 17  rl (ix+d), a
+dd cb xx 18  rr (ix+d), b
+dd cb xx 19  rr (ix+d), c
+dd cb xx 1a  rr (ix+d), d
+dd cb xx 1b  rr (ix+d), e
+dd cb xx 1c  rr (ix+d), h
+dd cb xx 1d  rr (ix+d), l
+dd cb xx 1e  rr (ix+d)
+dd cb xx 1f  rr (ix+d), a
+dd cb xx 20  sla (ix+d), b
+dd cb xx 21  sla (ix+d), c
+dd cb xx 22  sla (ix+d), d
+dd cb xx 23  sla (ix+d), e
+dd cb xx 24  sla (ix+d), h
+dd cb xx 25  sla (ix+d), l
+dd cb xx 26  sla (ix+d)
+dd cb xx 27  sla (ix+d), a
+dd cb xx 28  sra (ix+d), b
+dd cb xx 29  sra (ix+d), c
+dd cb xx 2a  sra (ix+d), d
+dd cb xx 2b  sra (ix+d), e
+dd cb xx 2c  sra (ix+d), h
+dd cb xx 2d  sra (ix+d), l
+dd cb xx 2e  sra (ix+d)
+dd cb xx 2f  sra (ix+d), a
+dd cb xx 30  sll (ix+d), b
+dd cb xx 31  sll (ix+d), c
+dd cb xx 32  sll (ix+d), d
+dd cb xx 33  sll (ix+d), e
+dd cb xx 34  sll (ix+d), h
+dd cb xx 35  sll (ix+d), l
+dd cb xx 36  sll (ix+d)
+dd cb xx 37  sll (ix+d), a
+dd cb xx 38  srl (ix+d), b
+dd cb xx 39  srl (ix+d), c
+dd cb xx 3a  srl (ix+d), d
+dd cb xx 3b  srl (ix+d), e
+dd cb xx 3c  srl (ix+d), h
+dd cb xx 3d  srl (ix+d), l
+dd cb xx 3e  srl (ix+d)
+dd cb xx 3f  srl (ix+d), a
+dd cb xx 40  bit 0, (ix+d)
+dd cb xx 41  bit 0, (ix+d)
+dd cb xx 42  bit 0, (ix+d)
+dd cb xx 43  bit 0, (ix+d)
+dd cb xx 44  bit 0, (ix+d)
+dd cb xx 45  bit 0, (ix+d)
+dd cb xx 46  bit 0, (ix+d)
+dd cb xx 47  bit 0, (ix+d)
+dd cb xx 48  bit 1, (ix+d)
+dd cb xx 49  bit 1, (ix+d)
+dd cb xx 4a  bit 1, (ix+d)
+dd cb xx 4b  bit 1, (ix+d)
+dd cb xx 4c  bit 1, (ix+d)
+dd cb xx 4d  bit 1, (ix+d)
+dd cb xx 4e  bit 1, (ix+d)
+dd cb xx 4f  bit 1, (ix+d)
+dd cb xx 50  bit 2, (ix+d)
+dd cb xx 51  bit 2, (ix+d)
+dd cb xx 52  bit 2, (ix+d)
+dd cb xx 53  bit 2, (ix+d)
+dd cb xx 54  bit 2, (ix+d)
+dd cb xx 55  bit 2, (ix+d)
+dd cb xx 56  bit 2, (ix+d)
+dd cb xx 57  bit 2, (ix+d)
+dd cb xx 58  bit 3, (ix+d)
+dd cb xx 59  bit 3, (ix+d)
+dd cb xx 5a  bit 3, (ix+d)
+dd cb xx 5b  bit 3, (ix+d)
+dd cb xx 5c  bit 3, (ix+d)
+dd cb xx 5d  bit 3, (ix+d)
+dd cb xx 5e  bit 3, (ix+d)
+dd cb xx 5f  bit 3, (ix+d)
+dd cb xx 60  bit 4, (ix+d)
+dd cb xx 61  bit 4, (ix+d)
+dd cb xx 62  bit 4, (ix+d)
+dd cb xx 63  bit 4, (ix+d)
+dd cb xx 64  bit 4, (ix+d)
+dd cb xx 65  bit 4, (ix+d)
+dd cb xx 66  bit 4, (ix+d)
+dd cb xx 67  bit 4, (ix+d)
+dd cb xx 68  bit 5, (ix+d)
+dd cb xx 69  bit 5, (ix+d)
+dd cb xx 6a  bit 5, (ix+d)
+dd cb xx 6b  bit 5, (ix+d)
+dd cb xx 6c  bit 5, (ix+d)
+dd cb xx 6d  bit 5, (ix+d)
+dd cb xx 6e  bit 5, (ix+d)
+dd cb xx 6f  bit 5, (ix+d)
+dd cb xx 70  bit 6, (ix+d)
+dd cb xx 71  bit 6, (ix+d)
+dd cb xx 72  bit 6, (ix+d)
+dd cb xx 73  bit 6, (ix+d)
+dd cb xx 74  bit 6, (ix+d)
+dd cb xx 75  bit 6, (ix+d)
+dd cb xx 76  bit 6, (ix+d)
+dd cb xx 77  bit 6, (ix+d)
+dd cb xx 78  bit 7, (ix+d)
+dd cb xx 79  bit 7, (ix+d)
+dd cb xx 7a  bit 7, (ix+d)
+dd cb xx 7b  bit 7, (ix+d)
+dd cb xx 7c  bit 7, (ix+d)
+dd cb xx 7d  bit 7, (ix+d)
+dd cb xx 7e  bit 7, (ix+d)
+dd cb xx 7f  bit 7, (ix+d)
+dd cb xx 80  res 0, (ix+d), b
+dd cb xx 81  res 0, (ix+d), c
+dd cb xx 82  res 0, (ix+d), d
+dd cb xx 83  res 0, (ix+d), e
+dd cb xx 84  res 0, (ix+d), h
+dd cb xx 85  res 0, (ix+d), l
+dd cb xx 86  res 0, (ix+d)
+dd cb xx 87  res 0, (ix+d), a
+dd cb xx 88  res 1, (ix+d), b
+dd cb xx 89  res 1, (ix+d), c
+dd cb xx 8a  res 1, (ix+d), d
+dd cb xx 8b  res 1, (ix+d), e
+dd cb xx 8c  res 1, (ix+d), h
+dd cb xx 8d  res 1, (ix+d), l
+dd cb xx 8e  res 1, (ix+d)
+dd cb xx 8f  res 1, (ix+d), a
+dd cb xx 90  res 2, (ix+d), b
+dd cb xx 91  res 2, (ix+d), c
+dd cb xx 92  res 2, (ix+d), d
+dd cb xx 93  res 2, (ix+d), e
+dd cb xx 94  res 2, (ix+d), h
+dd cb xx 95  res 2, (ix+d), l
+dd cb xx 96  res 2, (ix+d)
+dd cb xx 97  res 2, (ix+d), a
+dd cb xx 98  res 3, (ix+d), b
+dd cb xx 99  res 3, (ix+d), c
+dd cb xx 9a  res 3, (ix+d), d
+dd cb xx 9b  res 3, (ix+d), e
+dd cb xx 9c  res 3, (ix+d), h
+dd cb xx 9d  res 3, (ix+d), l
+dd cb xx 9e  res 3, (ix+d)
+dd cb xx 9f  res 3, (ix+d), a
+dd cb xx a0  res 4, (ix+d), b
+dd cb xx a1  res 4, (ix+d), c
+dd cb xx a2  res 4, (ix+d), d
+dd cb xx a3  res 4, (ix+d), e
+dd cb xx a4  res 4, (ix+d), h
+dd cb xx a5  res 4, (ix+d), l
+dd cb xx a6  res 4, (ix+d)
+dd cb xx a7  res 4, (ix+d), a
+dd cb xx a8  res 5, (ix+d), b
+dd cb xx a9  res 5, (ix+d), c
+dd cb xx aa  res 5, (ix+d), d
+dd cb xx ab  res 5, (ix+d), e
+dd cb xx ac  res 5, (ix+d), h
+dd cb xx ad  res 5, (ix+d), l
+dd cb xx ae  res 5, (ix+d)
+dd cb xx af  res 5, (ix+d), a
+dd cb xx b0  res 6, (ix+d), b
+dd cb xx b1  res 6, (ix+d), c
+dd cb xx b2  res 6, (ix+d), d
+dd cb xx b3  res 6, (ix+d), e
+dd cb xx b4  res 6, (ix+d), h
+dd cb xx b5  res 6, (ix+d), l
+dd cb xx b6  res 6, (ix+d)
+dd cb xx b7  res 6, (ix+d), a
+dd cb xx b8  res 7, (ix+d), b
+dd cb xx b9  res 7, (ix+d), c
+dd cb xx ba  res 7, (ix+d), d
+dd cb xx bb  res 7, (ix+d), e
+dd cb xx bc  res 7, (ix+d), h
+dd cb xx bd  res 7, (ix+d), l
+dd cb xx be  res 7, (ix+d)
+dd cb xx bf  res 7, (ix+d), a
+dd cb xx c0  set 0, (ix+d), b
+dd cb xx c1  set 0, (ix+d), c
+dd cb xx c2  set 0, (ix+d), d
+dd cb xx c3  set 0, (ix+d), e
+dd cb xx c4  set 0, (ix+d), h
+dd cb xx c5  set 0, (ix+d), l
+dd cb xx c6  set 0, (ix+d)
+dd cb xx c7  set 0, (ix+d), a
+dd cb xx c8  set 1, (ix+d), b
+dd cb xx c9  set 1, (ix+d), c
+dd cb xx ca  set 1, (ix+d), d
+dd cb xx cb  set 1, (ix+d), e
+dd cb xx cc  set 1, (ix+d), h
+dd cb xx cd  set 1, (ix+d), l
+dd cb xx ce  set 1, (ix+d)
+dd cb xx cf  set 1, (ix+d), a
+dd cb xx d0  set 2, (ix+d), b
+dd cb xx d1  set 2, (ix+d), c
+dd cb xx d2  set 2, (ix+d), d
+dd cb xx d3  set 2, (ix+d), e
+dd cb xx d4  set 2, (ix+d), h
+dd cb xx d5  set 2, (ix+d), l
+dd cb xx d6  set 2, (ix+d)
+dd cb xx d7  set 2, (ix+d), a
+dd cb xx d8  set 3, (ix+d), b
+dd cb xx d9  set 3, (ix+d), c
+dd cb xx da  set 3, (ix+d), d
+dd cb xx db  set 3, (ix+d), e
+dd cb xx dc  set 3, (ix+d), h
+dd cb xx dd  set 3, (ix+d), l
+dd cb xx de  set 3, (ix+d)
+dd cb xx df  set 3, (ix+d), a
+dd cb xx e0  set 4, (ix+d), b
+dd cb xx e1  set 4, (ix+d), c
+dd cb xx e2  set 4, (ix+d), d
+dd cb xx e3  set 4, (ix+d), e
+dd cb xx e4  set 4, (ix+d), h
+dd cb xx e5  set 4, (ix+d), l
+dd cb xx e6  set 4, (ix+d)
+dd cb xx e7  set 4, (ix+d), a
+dd cb xx e8  set 5, (ix+d), b
+dd cb xx e9  set 5, (ix+d), c
+dd cb xx ea  set 5, (ix+d), d
+dd cb xx eb  set 5, (ix+d), e
+dd cb xx ec  set 5, (ix+d), h
+dd cb xx ed  set 5, (ix+d), l
+dd cb xx ee  set 5, (ix+d)
+dd cb xx ef  set 5, (ix+d), a
+dd cb xx f0  set 6, (ix+d), b
+dd cb xx f1  set 6, (ix+d), c
+dd cb xx f2  set 6, (ix+d), d
+dd cb xx f3  set 6, (ix+d), e
+dd cb xx f4  set 6, (ix+d), h
+dd cb xx f5  set 6, (ix+d), l
+dd cb xx f6  set 6, (ix+d)
+dd cb xx f7  set 6, (ix+d), a
+dd cb xx f8  set 7, (ix+d), b
+dd cb xx f9  set 7, (ix+d), c
+dd cb xx fa  set 7, (ix+d), d
+dd cb xx fb  set 7, (ix+d), e
+dd cb xx fc  set 7, (ix+d), h
+dd cb xx fd  set 7, (ix+d), l
+dd cb xx fe  set 7, (ix+d)
+dd cb xx ff  set 7, (ix+d), a
+dd e1        pop ix
+dd e3        ex (sp), ix
+dd e5        push ix
+dd e9        jp (ix)
+dd f9        ld sp, ix
+de xx        sbc n
+df           rst 18
+e0           ret po
+e1           pop hl
+e2 xx xx     jp po, nn
+e3           ex (sp), hl
+e4 xx xx     call po, nn
+e5           push hl
+e6 xx        and n
+e7           rst 20
+e8           ret pe
+e9           jp (hl)
+ea xx xx     jp pe, nn
+eb           ex de, hl
+ec xx xx     call pe, nn
+ed 40        in b, (c)
+ed 41        out (c), b
+ed 42        sbc hl, bc
+ed 43 xx xx  ld (nn), bc
+ed 44        neg
+ed 45        retn
+ed 46        im 0
+ed 47        ld i, a
+ed 48        in c, (c)
+ed 49        out (c), c
+ed 4a        adc hl, bc
+ed 4b xx xx  ld bc, (nn)
+ed 4c        neg
+ed 4d        reti
+ed 4e        im 0
+ed 4f        ld r, a
+ed 50        in d, (c)
+ed 51        out (c), d
+ed 52        sbc hl, de
+ed 53 xx xx  ld (nn), de
+ed 54        neg
+ed 55        retn
+ed 56        im 1
+ed 57        ld a, i
+ed 58        in e, (c)
+ed 59        out (c), e
+ed 5a        adc hl, de
+ed 5b xx xx  ld de, (nn)
+ed 5c        neg
+ed 5d        retn
+ed 5e        im 2
+ed 5f        ld a, r
+ed 60        in h, (c)
+ed 61        out (c), h
+ed 62        sbc hl, hl
+ed 63 xx xx  ld (nn), hl
+ed 64        neg
+ed 65        retn
+ed 66        im 0
+ed 67        rrd
+ed 68        in l, (c)
+ed 69        out (c), l
+ed 6a        adc hl, hl
+ed 6b xx xx  ld hl, (nn)
+ed 6c        neg
+ed 6d        retn
+ed 6e        im 0
+ed 6f        rld
+ed 70        in (c)
+ed 71        out (c), 0
+ed 72        sbc hl, sp
+ed 73 xx xx  ld (nn), sp
+ed 74        neg
+ed 75        retn
+ed 76        im 1
+ed 78        in a, (c)
+ed 79        out (c), a
+ed 7a        adc hl, sp
+ed 7b xx xx  ld sp, (nn)
+ed 7c        neg
+ed 7d        retn
+ed 7e        im 2
+ed a0        ldi
+ed a1        cpi
+ed a2        ini
+ed a3        outi
+ed a8        ldd
+ed a9        cpd
+ed aa        ind
+ed ab        outd
+ed b0        ldir
+ed b1        cpir
+ed b2        inir
+ed b3        otir
+ed b8        lddr
+ed b9        cpdr
+ed ba        indr
+ed bb        otdr
+ee xx        xor n
+ef           rst 28
+f0           ret p
+f1           pop af
+f2 xx xx     jp p, nn
+f3           di
+f4 xx xx     call p, nn
+f5           push af
+f6 xx        or n
+f7           rst 30
+f8           ret m
+f9           ld sp, hl
+fa xx xx     jp m, nn
+fb           ei
+fc xx xx     call m, nn
+fd 09        add iy, bc
+fd 19        add iy, de
+fd 21 xx xx  ld iy, nn
+fd 22 xx xx  ld (nn), iy
+fd 23        inc iy
+fd 24        inc iyh
+fd 25        dec iyh
+fd 26 xx     ld iyh, n
+fd 29        add iy, iy
+fd 2a xx xx  ld iy, (nn)
+fd 2b        dec iy
+fd 2c        inc iyl
+fd 2d        dec iyl
+fd 2e xx     ld iyl, n
+fd 34 xx     inc (iy+d)
+fd 35 xx     dec (iy+d)
+fd 36 xx xx  ld (iy+d), n
+fd 39        add iy, sp
+fd 44        ld b, iyh
+fd 45        ld b, iyl
+fd 46 xx     ld b, (iy+d)
+fd 4c        ld c, iyh
+fd 4d        ld c, iyl
+fd 4e xx     ld c, (iy+d)
+fd 54        ld d, iyh
+fd 55        ld d, iyl
+fd 56 xx     ld d, (iy+d)
+fd 5c        ld e, iyh
+fd 5d        ld e, iyl
+fd 5e xx     ld e, (iy+d)
+fd 60        ld iyh, b
+fd 61        ld iyh, c
+fd 62        ld iyh, d
+fd 63        ld iyh, e
+fd 64        ld iyh, iyh
+fd 65        ld iyh, iyl
+fd 66 xx     ld h, (iy+d)
+fd 67        ld iyh, a
+fd 68        ld iyl, b
+fd 69        ld iyl, c
+fd 6a        ld iyl, d
+fd 6b        ld iyl, e
+fd 6c        ld iyl, iyh
+fd 6d        ld iyl, iyl
+fd 6e xx     ld l, (iy+d)
+fd 6f        ld iyl, a
+fd 70 xx     ld (iy+d), b
+fd 71 xx     ld (iy+d), c
+fd 72 xx     ld (iy+d), d
+fd 73 xx     ld (iy+d), e
+fd 74 xx     ld (iy+d), h
+fd 75 xx     ld (iy+d), l
+fd 77 xx     ld (iy+d), a
+fd 7c        ld a, iyh
+fd 7d        ld a, iyl
+fd 7e xx     ld a, (iy+d)
+fd 84        add iyh
+fd 85        add iyl
+fd 86 xx     add (iy+d)
+fd 8c        adc iyh
+fd 8d        adc iyl
+fd 8e xx     adc (iy+d)
+fd 94        sub iyh
+fd 95        sub iyl
+fd 96 xx     sub (iy+d)
+fd 9c        sbc iyh
+fd 9d        sbc iyl
+fd 9e xx     sbc (iy+d)
+fd a4        and iyh
+fd a5        and iyl
+fd a6 xx     and (iy+d)
+fd ac        xor iyh
+fd ad        xor iyl
+fd ae xx     xor (iy+d)
+fd b4        or iyh
+fd b5        or iyl
+fd b6 xx     or (iy+d)
+fd bc        cp iyh
+fd bd        cp iyl
+fd be xx     cp (iy+d)
+fd cb xx 00  rlc (iy+d), b
+fd cb xx 01  rlc (iy+d), c
+fd cb xx 02  rlc (iy+d), d
+fd cb xx 03  rlc (iy+d), e
+fd cb xx 04  rlc (iy+d), h
+fd cb xx 05  rlc (iy+d), l
+fd cb xx 06  rlc (iy+d)
+fd cb xx 07  rlc (iy+d), a
+fd cb xx 08  rrc (iy+d), b
+fd cb xx 09  rrc (iy+d), c
+fd cb xx 0a  rrc (iy+d), d
+fd cb xx 0b  rrc (iy+d), e
+fd cb xx 0c  rrc (iy+d), h
+fd cb xx 0d  rrc (iy+d), l
+fd cb xx 0e  rrc (iy+d)
+fd cb xx 0f  rrc (iy+d), a
+fd cb xx 10  rl (iy+d), b
+fd cb xx 11  rl (iy+d), c
+fd cb xx 12  rl (iy+d), d
+fd cb xx 13  rl (iy+d), e
+fd cb xx 14  rl (iy+d), h
+fd cb xx 15  rl (iy+d), l
+fd cb xx 16  rl (iy+d)
+fd cb xx 17  rl (iy+d), a
+fd cb xx 18  rr (iy+d), b
+fd cb xx 19  rr (iy+d), c
+fd cb xx 1a  rr (iy+d), d
+fd cb xx 1b  rr (iy+d), e
+fd cb xx 1c  rr (iy+d), h
+fd cb xx 1d  rr (iy+d), l
+fd cb xx 1e  rr (iy+d)
+fd cb xx 1f  rr (iy+d), a
+fd cb xx 20  sla (iy+d), b
+fd cb xx 21  sla (iy+d), c
+fd cb xx 22  sla (iy+d), d
+fd cb xx 23  sla (iy+d), e
+fd cb xx 24  sla (iy+d), h
+fd cb xx 25  sla (iy+d), l
+fd cb xx 26  sla (iy+d)
+fd cb xx 27  sla (iy+d), a
+fd cb xx 28  sra (iy+d), b
+fd cb xx 29  sra (iy+d), c
+fd cb xx 2a  sra (iy+d), d
+fd cb xx 2b  sra (iy+d), e
+fd cb xx 2c  sra (iy+d), h
+fd cb xx 2d  sra (iy+d), l
+fd cb xx 2e  sra (iy+d)
+fd cb xx 2f  sra (iy+d), a
+fd cb xx 30  sll (iy+d), b
+fd cb xx 31  sll (iy+d), c
+fd cb xx 32  sll (iy+d), d
+fd cb xx 33  sll (iy+d), e
+fd cb xx 34  sll (iy+d), h
+fd cb xx 35  sll (iy+d), l
+fd cb xx 36  sll (iy+d)
+fd cb xx 37  sll (iy+d), a
+fd cb xx 38  srl (iy+d), b
+fd cb xx 39  srl (iy+d), c
+fd cb xx 3a  srl (iy+d), d
+fd cb xx 3b  srl (iy+d), e
+fd cb xx 3c  srl (iy+d), h
+fd cb xx 3d  srl (iy+d), l
+fd cb xx 3e  srl (iy+d)
+fd cb xx 3f  srl (iy+d), a
+fd cb xx 40  bit 0, (iy+d)
+fd cb xx 41  bit 0, (iy+d)
+fd cb xx 42  bit 0, (iy+d)
+fd cb xx 43  bit 0, (iy+d)
+fd cb xx 44  bit 0, (iy+d)
+fd cb xx 45  bit 0, (iy+d)
+fd cb xx 46  bit 0, (iy+d)
+fd cb xx 47  bit 0, (iy+d)
+fd cb xx 48  bit 1, (iy+d)
+fd cb xx 49  bit 1, (iy+d)
+fd cb xx 4a  bit 1, (iy+d)
+fd cb xx 4b  bit 1, (iy+d)
+fd cb xx 4c  bit 1, (iy+d)
+fd cb xx 4d  bit 1, (iy+d)
+fd cb xx 4e  bit 1, (iy+d)
+fd cb xx 4f  bit 1, (iy+d)
+fd cb xx 50  bit 2, (iy+d)
+fd cb xx 51  bit 2, (iy+d)
+fd cb xx 52  bit 2, (iy+d)
+fd cb xx 53  bit 2, (iy+d)
+fd cb xx 54  bit 2, (iy+d)
+fd cb xx 55  bit 2, (iy+d)
+fd cb xx 56  bit 2, (iy+d)
+fd cb xx 57  bit 2, (iy+d)
+fd cb xx 58  bit 3, (iy+d)
+fd cb xx 59  bit 3, (iy+d)
+fd cb xx 5a  bit 3, (iy+d)
+fd cb xx 5b  bit 3, (iy+d)
+fd cb xx 5c  bit 3, (iy+d)
+fd cb xx 5d  bit 3, (iy+d)
+fd cb xx 5e  bit 3, (iy+d)
+fd cb xx 5f  bit 3, (iy+d)
+fd cb xx 60  bit 4, (iy+d)
+fd cb xx 61  bit 4, (iy+d)
+fd cb xx 62  bit 4, (iy+d)
+fd cb xx 63  bit 4, (iy+d)
+fd cb xx 64  bit 4, (iy+d)
+fd cb xx 65  bit 4, (iy+d)
+fd cb xx 66  bit 4, (iy+d)
+fd cb xx 67  bit 4, (iy+d)
+fd cb xx 68  bit 5, (iy+d)
+fd cb xx 69  bit 5, (iy+d)
+fd cb xx 6a  bit 5, (iy+d)
+fd cb xx 6b  bit 5, (iy+d)
+fd cb xx 6c  bit 5, (iy+d)
+fd cb xx 6d  bit 5, (iy+d)
+fd cb xx 6e  bit 5, (iy+d)
+fd cb xx 6f  bit 5, (iy+d)
+fd cb xx 70  bit 6, (iy+d)
+fd cb xx 71  bit 6, (iy+d)
+fd cb xx 72  bit 6, (iy+d)
+fd cb xx 73  bit 6, (iy+d)
+fd cb xx 74  bit 6, (iy+d)
+fd cb xx 75  bit 6, (iy+d)
+fd cb xx 76  bit 6, (iy+d)
+fd cb xx 77  bit 6, (iy+d)
+fd cb xx 78  bit 7, (iy+d)
+fd cb xx 79  bit 7, (iy+d)
+fd cb xx 7a  bit 7, (iy+d)
+fd cb xx 7b  bit 7, (iy+d)
+fd cb xx 7c  bit 7, (iy+d)
+fd cb xx 7d  bit 7, (iy+d)
+fd cb xx 7e  bit 7, (iy+d)
+fd cb xx 7f  bit 7, (iy+d)
+fd cb xx 80  res 0, (iy+d), b
+fd cb xx 81  res 0, (iy+d), c
+fd cb xx 82  res 0, (iy+d), d
+fd cb xx 83  res 0, (iy+d), e
+fd cb xx 84  res 0, (iy+d), h
+fd cb xx 85  res 0, (iy+d), l
+fd cb xx 86  res 0, (iy+d)
+fd cb xx 87  res 0, (iy+d), a
+fd cb xx 88  res 1, (iy+d), b
+fd cb xx 89  res 1, (iy+d), c
+fd cb xx 8a  res 1, (iy+d), d
+fd cb xx 8b  res 1, (iy+d), e
+fd cb xx 8c  res 1, (iy+d), h
+fd cb xx 8d  res 1, (iy+d), l
+fd cb xx 8e  res 1, (iy+d)
+fd cb xx 8f  res 1, (iy+d), a
+fd cb xx 90  res 2, (iy+d), b
+fd cb xx 91  res 2, (iy+d), c
+fd cb xx 92  res 2, (iy+d), d
+fd cb xx 93  res 2, (iy+d), e
+fd cb xx 94  res 2, (iy+d), h
+fd cb xx 95  res 2, (iy+d), l
+fd cb xx 96  res 2, (iy+d)
+fd cb xx 97  res 2, (iy+d), a
+fd cb xx 98  res 3, (iy+d), b
+fd cb xx 99  res 3, (iy+d), c
+fd cb xx 9a  res 3, (iy+d), d
+fd cb xx 9b  res 3, (iy+d), e
+fd cb xx 9c  res 3, (iy+d), h
+fd cb xx 9d  res 3, (iy+d), l
+fd cb xx 9e  res 3, (iy+d)
+fd cb xx 9f  res 3, (iy+d), a
+fd cb xx a0  res 4, (iy+d), b
+fd cb xx a1  res 4, (iy+d), c
+fd cb xx a2  res 4, (iy+d), d
+fd cb xx a3  res 4, (iy+d), e
+fd cb xx a4  res 4, (iy+d), h
+fd cb xx a5  res 4, (iy+d), l
+fd cb xx a6  res 4, (iy+d)
+fd cb xx a7  res 4, (iy+d), a
+fd cb xx a8  res 5, (iy+d), b
+fd cb xx a9  res 5, (iy+d), c
+fd cb xx aa  res 5, (iy+d), d
+fd cb xx ab  res 5, (iy+d), e
+fd cb xx ac  res 5, (iy+d), h
+fd cb xx ad  res 5, (iy+d), l
+fd cb xx ae  res 5, (iy+d)
+fd cb xx af  res 5, (iy+d), a
+fd cb xx b0  res 6, (iy+d), b
+fd cb xx b1  res 6, (iy+d), c
+fd cb xx b2  res 6, (iy+d), d
+fd cb xx b3  res 6, (iy+d), e
+fd cb xx b4  res 6, (iy+d), h
+fd cb xx b5  res 6, (iy+d), l
+fd cb xx b6  res 6, (iy+d)
+fd cb xx b7  res 6, (iy+d), a
+fd cb xx b8  res 7, (iy+d), b
+fd cb xx b9  res 7, (iy+d), c
+fd cb xx ba  res 7, (iy+d), d
+fd cb xx bb  res 7, (iy+d), e
+fd cb xx bc  res 7, (iy+d), h
+fd cb xx bd  res 7, (iy+d), l
+fd cb xx be  res 7, (iy+d)
+fd cb xx bf  res 7, (iy+d), a
+fd cb xx c0  set 0, (iy+d), b
+fd cb xx c1  set 0, (iy+d), c
+fd cb xx c2  set 0, (iy+d), d
+fd cb xx c3  set 0, (iy+d), e
+fd cb xx c4  set 0, (iy+d), h
+fd cb xx c5  set 0, (iy+d), l
+fd cb xx c6  set 0, (iy+d)
+fd cb xx c7  set 0, (iy+d), a
+fd cb xx c8  set 1, (iy+d), b
+fd cb xx c9  set 1, (iy+d), c
+fd cb xx ca  set 1, (iy+d), d
+fd cb xx cb  set 1, (iy+d), e
+fd cb xx cc  set 1, (iy+d), h
+fd cb xx cd  set 1, (iy+d), l
+fd cb xx ce  set 1, (iy+d)
+fd cb xx cf  set 1, (iy+d), a
+fd cb xx d0  set 2, (iy+d), b
+fd cb xx d1  set 2, (iy+d), c
+fd cb xx d2  set 2, (iy+d), d
+fd cb xx d3  set 2, (iy+d), e
+fd cb xx d4  set 2, (iy+d), h
+fd cb xx d5  set 2, (iy+d), l
+fd cb xx d6  set 2, (iy+d)
+fd cb xx d7  set 2, (iy+d), a
+fd cb xx d8  set 3, (iy+d), b
+fd cb xx d9  set 3, (iy+d), c
+fd cb xx da  set 3, (iy+d), d
+fd cb xx db  set 3, (iy+d), e
+fd cb xx dc  set 3, (iy+d), h
+fd cb xx dd  set 3, (iy+d), l
+fd cb xx de  set 3, (iy+d)
+fd cb xx df  set 3, (iy+d), a
+fd cb xx e0  set 4, (iy+d), b
+fd cb xx e1  set 4, (iy+d), c
+fd cb xx e2  set 4, (iy+d), d
+fd cb xx e3  set 4, (iy+d), e
+fd cb xx e4  set 4, (iy+d), h
+fd cb xx e5  set 4, (iy+d), l
+fd cb xx e6  set 4, (iy+d)
+fd cb xx e7  set 4, (iy+d), a
+fd cb xx e8  set 5, (iy+d), b
+fd cb xx e9  set 5, (iy+d), c
+fd cb xx ea  set 5, (iy+d), d
+fd cb xx eb  set 5, (iy+d), e
+fd cb xx ec  set 5, (iy+d), h
+fd cb xx ed  set 5, (iy+d), l
+fd cb xx ee  set 5, (iy+d)
+fd cb xx ef  set 5, (iy+d), a
+fd cb xx f0  set 6, (iy+d), b
+fd cb xx f1  set 6, (iy+d), c
+fd cb xx f2  set 6, (iy+d), d
+fd cb xx f3  set 6, (iy+d), e
+fd cb xx f4  set 6, (iy+d), h
+fd cb xx f5  set 6, (iy+d), l
+fd cb xx f6  set 6, (iy+d)
+fd cb xx f7  set 6, (iy+d), a
+fd cb xx f8  set 7, (iy+d), b
+fd cb xx f9  set 7, (iy+d), c
+fd cb xx fa  set 7, (iy+d), d
+fd cb xx fb  set 7, (iy+d), e
+fd cb xx fc  set 7, (iy+d), h
+fd cb xx fd  set 7, (iy+d), l
+fd cb xx fe  set 7, (iy+d)
+fd cb xx ff  set 7, (iy+d), a
+fd e1        pop iy
+fd e3        ex (sp), iy
+fd e5        push iy
+fd e9        jp (iy)
+fd f9        ld sp, iy
+fe xx        cp n
+ff           rst 38
