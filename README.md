@@ -8,6 +8,14 @@ It was mostly pieced together from the now-defunct
 and files downloaded from
 [Fybertech's Mailstation pages](http://www.fybertech.net/mailstation/).
 
+There is no license on most of the code gathered from these sources, but since
+it was all posted to the public Yahoo group, I am naively assuming it is in the
+public domain.
+
+(Except for win32/inpout32.dll, obtained from
+[its website](http://www.highrez.co.uk/downloads/inpout32/) which states "This
+product is released as open source (Freeware).")
+
 The Z80 assembly files have been updated to assemble on newer non-win32
 assemblers.
 
