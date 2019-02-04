@@ -27,10 +27,9 @@
 
 	jp	eventhandler		; Jump to the start of our code.
 
- 	.dw	(icon)			; The following is data about the app
+ 	.dw	(icons)			; The following is data about the app
  	.dw	(caption)		; itself, most of which we won't even
  	.dw	(dunno)			; worry about.
-
 dunno:
 	.db	#0
 zip:
@@ -44,7 +43,17 @@ caption:
 	.ascii	"Loader"		; the caption string
 endcap:
 
-icon:
+icons:
+	.dw	#0		; size icon0
+	.dw	(icon0 - icons)	; offset to icon0
+	.dw	#0		; size icon1
+	.dw	(icon1 - icons)	; offset to icon1 (0x00b5)
+icon0:
+	.dw	#0		; icon width
+	.db	#0		; icon height
+icon1:
+	.dw	#0		; icon width
+	.db	#0		; icon height
 
 	.equ	brecvbyte, #0x8027	; Firmware function in codeflash page 1.  Attempts
 					; to receive a byte.  Upon returning, if a = 0, it

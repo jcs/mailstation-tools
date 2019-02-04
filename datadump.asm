@@ -14,24 +14,33 @@
 
 	jp	eventhandler
 
-	.dw	(icon)			; icon location (in this page)
+	.dw	(icons)			; icon location (in this page)
 	.dw	(caption)
 	.dw	(dunno)
-
 dunno:
 	.db	#0
-zip:
-	.db	#0
-zilch:
-	.db	#0
+xpos:
+	.dw	#0
+ypos:
+	.dw	#0
 caption:
 	.dw	#0x0001			; ?????
 	.dw	(endcap - caption - 6)	; end of chars
-	.dw	#0006			; offset to first char
+	.dw	#0x0006			; offset to first char
 	.ascii	"Data Dump"		; the caption string
 endcap:
 
-icon:
+icons:
+	.dw	#0		; size icon0
+	.dw	(icon0 - icons)	; offset to icon0
+	.dw	#0		; size icon1
+	.dw	(icon1 - icons)	; offset to icon1 (0x00b5)
+icon0:
+	.dw	#0		; icon width
+	.db	#0		; icon height
+icon1:
+	.dw	#0		; icon width
+	.db	#0		; icon height
 
 	.equ	bsendbyte, #0x802D	; raises busy & sends byte.
 					; We use the existing sendbyte from
