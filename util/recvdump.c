@@ -61,7 +61,7 @@ main(int argc, char *argv[])
 {
 	FILE *pFile;
 	unsigned int received = 0, expected = 0;
-	unsigned char t1, t2, t3, b;
+	unsigned char b;
 	char fn[14];
 	int codeflash = 0, dataflash = 0;
 	int x;
@@ -106,11 +106,8 @@ main(int argc, char *argv[])
 	fflush(stdout);
 
 	while (received < expected) {
-		t1 = recvtribble();
-		t2 = recvtribble();
-		t3 = recvtribble();
-
-		b = t1 + (t2 << 3) + ((t3 & dibmask) << 6);
+		b = recvtribble() + (recvtribble() << 3) +
+		    ((recvtribble() & dibmask) << 6);
 
 		if (received == 0)
 			printf("\n");
