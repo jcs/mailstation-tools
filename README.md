@@ -59,18 +59,19 @@ Extras menu (depending on the firmware version).
 
 ### `loader.asm`
 
-`loader` is used to load binary code over the Laplink cable into RAM and then
+Loader is used to load binary code over the Laplink cable into RAM and then
 execute it.
 
 You need to type the hex values of `z80/loader.bin` (tip: use `hexdump -C
 z80/loader.bin`) into one of the application slots as detailed above, then run
 the new Loader app on the Mailstation.
-Then run `mailsend.exe <your binary file>` to send your binary code over the
+
+Then run `obj/sendload <your binary file>` to send your binary code over the
 Laplink cable and it will be executed as soon as the transfer is done.
 
 ### `codedump.asm`
 
-`codedump` is used to read the contents of the 1Mb flash chip containing the
+Code Dump is used to read the contents of the 1Mb flash chip containing the
 Mailstation's code and send it over the Laplink cable.
 
 You need to type the hex values of `z80/codedump.bin` into one of the
@@ -84,7 +85,7 @@ You may want to run it twice and compare checksums of the two resulting files.
 
 ### `datadump.asm`
 
-`datadump` is used to read the contents of the 512Kb flash chip containing the
+Data Dump is used to read the contents of the 512Kb flash chip containing the
 Mailstation's data area (containing downloaded programs, e-mails, etc.) and
 send it over the Laplink cable.
 

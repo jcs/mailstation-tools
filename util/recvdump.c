@@ -7,7 +7,7 @@
  * must be run as root to set iopl and use inb/outb
  *
  * assumes parallel port is at PORTADDRESS and codedump or datadump has been
- * loaded on the MailStation and is running
+ * loaded on the Mailstation and is running
  */
 
 #include <stdio.h>
@@ -18,43 +18,7 @@
 #include <machine/sysarch.h>
 #include <machine/pio.h>
 
-#define PORTADDRESS 0x378
-
-#define DATA PORTADDRESS+0
-#define STATUS PORTADDRESS+1
-#define CONTROL PORTADDRESS+2
-
-#define bsyin 0x40
-#define bsyout 0x08
-#define stbin 0x80
-#define stbout 0x10
-#define tribmask 0x07
-#define dibmask 0x03
-
-unsigned char
-recvtribble(void)
-{
-	unsigned char mytribble;
-
-	/* drop busy/ack */
-	outb(DATA, 0);
-
-	/* wait for (inverted) strobe */
-	while ((inb(STATUS) & stbin) != 0)
-		;
-
-	/* grab tribble */
-	mytribble = (inb(STATUS) >> 3) & tribmask;
-
-	/* raise busy/ack */
-	outb(DATA,bsyout);
-
-	/* wait for (inverted) UNstrobe */
-	while ((inb(STATUS) & stbin) == 0)
-		;
-
-	return mytribble;
-}
+#include "tribble.h"
 
 int
 main(int argc, char *argv[])
@@ -102,18 +66,17 @@ main(int argc, char *argv[])
 		return -1;
 	}
 
-	printf("dumping to %s, run Code Dump on MailStation now...", fn);
+	printf("dumping to %s, run Code Dump on Mailstation...", fn);
 	fflush(stdout);
 
 	while (received < expected) {
 		b = recvtribble() + (recvtribble() << 3) +
 		    ((recvtribble() & dibmask) << 6);
 
-		if (received == 0)
-			printf("\n");
-
 		fputc(b, pFile);
-		received++;
+
+		if (received++ == 0)
+			printf("\n");
 
 		if (received % 1024 == 0 || received == expected) {
 			printf("\rreceived: %07d/%07d", received, expected);

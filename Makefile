@@ -10,10 +10,12 @@ SDCC	?= sdcc -mz80
 
 OBJ	?= obj/
 
-all: loader.bin codedump.bin datadump.bin recvdump
+CFLAGS	+= -Wall
+
+all: loader.bin codedump.bin datadump.bin recvdump sendload
 
 clean:
-	rm -f *.{map,bin,ihx,lst,rel,sym,lk,noi} recvdump
+	rm -f *.{map,bin,ihx,lst,rel,sym,lk,noi} recvdump sendload
 
 # parallel loader
 loader.rel: loader.asm
@@ -47,4 +49,8 @@ datadump.bin: datadump.ihx
 
 # datadump/codedump receiver
 recvdump: util/recvdump.c
-	$(CC) -lamd64 -o $@ $>
+	$(CC) $(CFLAGS) -lamd64 -o $@ $>
+
+# program loader
+sendload: util/sendload.c
+	$(CC) $(CFLAGS) -lamd64 -o $@ $>
