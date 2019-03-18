@@ -1,7 +1,7 @@
 ## mailstation-tools
 
-This is a collection of tools for working with Cidco Mailstation devices,
-primarily the DET1.
+This is a collection of tools for working with Cidco Mailstation devices
+(primarily the DET1), from a Unix machine.
 
 It was mostly pieced together from the now-defunct
 [mailstation Yahoo Group](https://groups.yahoo.com/neo/groups/mailstation/info)
@@ -12,12 +12,19 @@ There is no license on most of the code gathered from these sources, but since
 it was all posted to the public Yahoo group, I am naively assuming it is in the
 public domain.
 
-(Except for win32/inpout32.dll, obtained from
+(Except for `win32/inpout32.dll`, obtained from
 [its website](http://www.highrez.co.uk/downloads/inpout32/) which states "This
 product is released as open source (Freeware).")
 
 The Z80 assembly files have been updated to assemble on newer non-win32
 assemblers.
+
+### Compiling
+
+Install [SDCC](http://sdcc.sourceforge.net/) and
+[hex2bin](https://sourceforge.net/projects/hex2bin/files/hex2bin/).
+
+Create an `obj` directory with `mkdir obj` and then run `make`.
 
 ### Loading code onto the Mailstation
 
@@ -69,9 +76,9 @@ Mailstation's code and send it over the Laplink cable.
 You need to type the hex values of `z80/codedump.bin` into one of the
 application slots as detailed above.
 
-Run `maildump.exe /code` to wait for the code dump to begin.
+Run `obj/recvdump -code` to wait for the code dump to begin.
 
-Then run the new Code Dump app on the Mailstation and `maildump` should show
+Then run the new Code Dump app on the Mailstation and `recvdump` should show
 its progress as it reads the transmitted data and saves it to `codeflash.bin`.
 You may want to run it twice and compare checksums of the two resulting files.
 
@@ -84,9 +91,9 @@ send it over the Laplink cable.
 You need to type the hex values of `z80/datadump.bin` into one of the
 application slots as detailed above.
 
-Run `maildump.exe /data` to wait for the data dump to begin.
+Run `obj/recvdump -data` to wait for the data dump to begin.
 
-Then run the new Data Dump app on the Mailstation and `maildump` should show
+Then run the new Data Dump app on the Mailstation and `recvdump` should show
 its progress as it reads the transmitted data and saves it to `dataflash.bin`.
 You may want to run it twice and compare checksums of the two resulting files.
 
@@ -102,7 +109,7 @@ or `datadump`.
 
 To extract program 0 (which lives at 0x0000) from `dataflash.bin`, run:
 
-	app_extractor.rb -f dataflash.bin -a 0
+	util/app_extractor.rb -f dataflash.bin -a 0
 
 Each of the programs can be extracted with different `-a` values.
 

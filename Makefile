@@ -1,8 +1,7 @@
 #
-# Requires SDCC and its ASZ80 assembler
+# ASM code requires SDCC and its ASZ80 assembler
 # http://sdcc.sourceforge.net/
-#
-# Requires hex2bin
+# and hex2bin
 # https://sourceforge.net/projects/hex2bin/files/hex2bin/
 #
 
@@ -11,10 +10,10 @@ SDCC	?= sdcc -mz80
 
 OBJ	?= obj/
 
-all: loader.bin codedump.bin datadump.bin
+all: loader.bin codedump.bin datadump.bin recvdump
 
 clean:
-	rm -f *.{map,bin,ihx,lst,rel,sym,lk,noi}
+	rm -f *.{map,bin,ihx,lst,rel,sym,lk,noi} recvdump
 
 # parallel loader
 loader.rel: loader.asm
@@ -45,3 +44,7 @@ datadump.ihx: datadump.rel
 
 datadump.bin: datadump.ihx
 	hex2bin $> >/dev/null
+
+# datadump/codedump receiver
+recvdump: util/recvdump.c
+	$(CC) -lamd64 -o $@ $>
