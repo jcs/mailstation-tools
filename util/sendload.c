@@ -35,8 +35,13 @@ main(int argc, char *argv[])
 		errx(1, "must be run as root");
 
 #ifdef __OpenBSD__
+#ifdef __amd64__
 	if (amd64_iopl(1) != 0)
 		errx(1, "amd64_iopl failed (is machdep.allowaperture=1?)");
+#elif defined(__i386__)
+	if (i386_iopl(1) != 0)
+		errx(1, "i386_iopl failed (is machdep.allowaperture=1?)");
+#endif
 #endif
 
 	fn = argv[1];

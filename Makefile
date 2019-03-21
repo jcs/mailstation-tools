@@ -12,7 +12,22 @@ OBJ	?= obj/
 
 CFLAGS	+= -Wall
 
-all: loader.bin codedump.bin datadump.bin recvdump sendload
+IOPL_LIB=
+
+OS	!= uname
+
+.if ${OS} == "OpenBSD"
+.if ${MACHINE_ARCH} == "amd64"
+IOPL_LIB=-lamd64
+.elif ${MACHINE_ARCH} == "i386"
+IOPL_LIB=-li386
+.endif
+.endif
+
+all: objdir loader.bin codedump.bin datadump.bin recvdump sendload
+
+objdir:
+	@mkdir -p ${OBJ}
 
 clean:
 	rm -f *.{map,bin,ihx,lst,rel,sym,lk,noi} recvdump sendload
@@ -49,8 +64,8 @@ datadump.bin: datadump.ihx
 
 # datadump/codedump receiver
 recvdump: util/recvdump.c
-	$(CC) $(CFLAGS) -lamd64 -o $@ $>
+	$(CC) $(CFLAGS) -o $@ $> $(IOPL_LIB)
 
 # program loader
 sendload: util/sendload.c
-	$(CC) $(CFLAGS) -lamd64 -o $@ $>
+	$(CC) $(CFLAGS) -o $@ $> $(IOPL_LIB)
