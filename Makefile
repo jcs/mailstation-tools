@@ -63,9 +63,9 @@ datadump.bin: datadump.ihx
 	hex2bin $> >/dev/null
 
 # datadump/codedump receiver
-recvdump: util/recvdump.c
+recvdump: util/recvdump.c util/tribble.c
 	$(CC) $(CFLAGS) -o $@ $> $(IOPL_LIB)
 
 # program loader
-sendload: util/sendload.c
+sendload: util/sendload.c util/tribble.c
 	$(CC) $(CFLAGS) -o $@ $> $(IOPL_LIB)

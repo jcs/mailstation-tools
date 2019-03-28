@@ -16,7 +16,6 @@
 #include <unistd.h>
 #include <sys/types.h>
 #include <machine/sysarch.h>
-#include <machine/pio.h>
 
 #include "tribble.h"
 
