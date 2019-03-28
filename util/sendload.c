@@ -9,6 +9,7 @@
 
 #include <stdio.h>
 #include <string.h>
+#include <signal.h>
 #include <err.h>
 #include <unistd.h>
 #include <sys/types.h>
@@ -17,6 +18,15 @@
 #include <machine/pio.h>
 
 #include "tribble.h"
+
+void
+timeout(int sig)
+{
+	printf("\ntimed out, aborting\n");
+	fflush(stdout);
+
+	_exit(1);
+}
 
 int
 main(int argc, char *argv[])
@@ -55,14 +65,18 @@ main(int argc, char *argv[])
 	/* we're never going to send huge files */
 	size = (unsigned int)sb.st_size;
 
+	signal(SIGALRM, timeout);
+
 	printf("sending %s (%d bytes)...", fn, size);
 	fflush(stdout);
 
 	/* loader expects two bytes, the low and then high of the file size */
+	alarm(10);
 	sendbyte(size & 0xff);
 	sendbyte((size >> 8) & 0xff);
 
 	while (sent < size) {
+		alarm(1);
 		sendbyte(fgetc(pFile));
 
 		if (sent++ == 0)
