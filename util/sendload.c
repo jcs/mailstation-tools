@@ -8,6 +8,7 @@
  */
 
 #include <stdio.h>
+#include <stdlib.h>
 #include <string.h>
 #include <signal.h>
 #include <err.h>
@@ -28,18 +29,36 @@ timeout(int sig)
 	_exit(1);
 }
 
+void
+usage(void)
+{
+	printf("usage: %s [-r] <file to send>\n", getprogname());
+	exit(1);
+}
+
 int
 main(int argc, char *argv[])
 {
 	FILE *pFile;
 	struct stat sb;
-	unsigned int sent = 0, size = 0;
+	unsigned int sent = 0, size = 0, raw = 0;
+	int ch;
 	char *fn;
 
-	if (argc != 2) {
-		printf("usage: %s <binary file to send>\n", argv[0]);
-		return 1;
+	while ((ch = getopt(argc, argv, "r")) != -1) {
+		switch (ch) {
+		case 'r':
+			raw = 1;
+			break;
+		default:
+			usage();
+		}
 	}
+	argc -= optind;
+	argv += optind;
+
+	if (argc != 1)
+		usage();
 
 	if (geteuid() != 0)
 		errx(1, "must be run as root");
@@ -54,7 +73,7 @@ main(int argc, char *argv[])
 #endif
 #endif
 
-	fn = argv[1];
+	fn = argv[0];
 	pFile = fopen(fn, "rb");
 	if (!pFile)
 		err(1, "open: %s", fn);
@@ -71,9 +90,11 @@ main(int argc, char *argv[])
 	fflush(stdout);
 
 	/* loader expects two bytes, the low and then high of the file size */
-	alarm(10);
-	sendbyte(size & 0xff);
-	sendbyte((size >> 8) & 0xff);
+	if (!raw) {
+		alarm(10);
+		sendbyte(size & 0xff);
+		sendbyte((size >> 8) & 0xff);
+	}
 
 	while (sent < size) {
 		alarm(1);
@@ -82,7 +103,7 @@ main(int argc, char *argv[])
 		if (sent++ == 0)
 			printf("\n");
 
-		if (sent % 1024 == 0 || sent == size) {
+		if (sent % (raw ? 64 : 1024) == 0 || sent == size) {
 			printf("\rsent: %07d/%07d", sent, size);
 			fflush(stdout);
 		}
