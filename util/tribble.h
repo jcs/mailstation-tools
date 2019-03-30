@@ -12,5 +12,8 @@
 #define dibmask 0x03
 
 unsigned char recvtribble(void);
+unsigned char recvbyte(void);
 void sendtribble(unsigned char b);
 void sendbyte(unsigned char b);
+
+extern int tribble_debug;

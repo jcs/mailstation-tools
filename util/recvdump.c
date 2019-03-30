@@ -74,8 +74,7 @@ main(int argc, char *argv[])
 	fflush(stdout);
 
 	while (received < expected) {
-		b = recvtribble() + (recvtribble() << 3) +
-		    ((recvtribble() & dibmask) << 6);
+		b = recvbyte();
 
 		fputc(b, pFile);
 

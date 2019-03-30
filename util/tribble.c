@@ -1,3 +1,4 @@
+#include <stdio.h>
 #include <sys/types.h>
 #include <machine/pio.h>
 
@@ -26,6 +27,13 @@ recvtribble(void)
 		;
 
 	return b;
+}
+
+unsigned char
+recvbyte(void)
+{
+	return recvtribble() + (recvtribble() << 3) +
+	    ((recvtribble() & dibmask) << 6);
 }
 
 void
