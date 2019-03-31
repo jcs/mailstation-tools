@@ -11,6 +11,7 @@
 #define tribmask 0x07
 #define dibmask 0x03
 
+unsigned int havetribble(void);
 unsigned char recvtribble(void);
 unsigned char recvbyte(void);
 void sendtribble(unsigned char b);
