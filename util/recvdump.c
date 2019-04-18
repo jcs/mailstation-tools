@@ -11,6 +11,7 @@
  */
 
 #include <stdio.h>
+#include <stdlib.h>
 #include <string.h>
 #include <err.h>
 #include <unistd.h>
@@ -67,16 +68,18 @@ main(int argc, char *argv[])
 	pFile = fopen(fn, "wb");
 	if (!pFile) {
 		printf("couldn't open file %s\n", fn);
-		return -1;
+		return 1;
 	}
 
 	printf("dumping to %s, run Code Dump on Mailstation...", fn);
 	fflush(stdout);
 
 	while (received < expected) {
-		b = recvbyte();
+		if ((b = recvbyte()) == -1)
+			continue;
 
-		fputc(b, pFile);
+		fputc(b & 0xff, pFile);
+		fflush(pFile);
 
 		if (received++ == 0)
 			printf("\n");

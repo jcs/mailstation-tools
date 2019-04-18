@@ -9,6 +9,7 @@
  */
 
 #include <stdio.h>
+#include <stdlib.h>
 #include <string.h>
 #include <signal.h>
 #include <err.h>
@@ -27,12 +28,11 @@ int
 main(int argc, char *argv[])
 {
 	struct timeval tv = { 0 };
-	char obuf[BUFSIZ];
-	size_t cc, off;
+	unsigned char obuf[2];
+	size_t cc = 0;
 	fd_set rfds;
 	pid_t child;
-	int master, slave;
-	char b;
+	int master, slave, b;
 
 	if (geteuid() != 0)
 		errx(1, "must be run as root");
@@ -52,12 +52,15 @@ main(int argc, char *argv[])
 
 	child = fork();
 	if (child == 0) {
-		char *argp[] = { "sh", "-c", NULL, NULL };
+		char *argp[] = { "sh", "-c", "/usr/libexec/getty", NULL };
 
 		close(master);
 		login_tty(slave);
 
-		argp[2] = "/usr/libexec/getty";
+		setenv("TERM", "vt100", 1);
+		setenv("LINES", "15", 1);
+		setenv("COLUMNS", "64", 1);
+
 		execv("/bin/sh", argp);
 	}
 
@@ -68,25 +71,29 @@ main(int argc, char *argv[])
 		FD_SET(master, &rfds);
 		tv.tv_usec = 10;
 
-		if (select(master + 1, &rfds, NULL, NULL, &tv)) {
-			cc = read(master, obuf, sizeof(obuf));
+		if (cc == 0 && select(master + 1, &rfds, NULL, NULL, &tv)) {
+			cc = read(master, obuf, 1);
 			if (cc == -1 && errno == EINTR)
 				continue;
 			if (cc <= 0)
 				break;
+		}
 
-			for (off = 0; off < cc; off++) {
+		if (cc > 0 && (sendbyte(obuf[0]) == 0)) {
+			cc--;
 #if 0
-				printf("sendbyte(0x%x): %c\n", obuf[off],
-					(obuf[off] >= 32 && obuf[off] <= 126 ?
-					obuf[off] : ' '));
+			printf("sendbyte(0x%x): %c\n", obuf[0],
+				(obuf[0] >= 32 && obuf[0] <= 126 ?
+				obuf[0] : ' '));
 #endif
-				sendbyte(obuf[off]);
-			}
 		}
 
 		if (havetribble()) {
 			b = recvbyte();
+			if (b < 0) {
+				printf("recvbyte() failed\n");
+				continue;
+			}
 #if 0
 			printf("recvbyte() = 0x%x: %c\n", b,
 				(b >= 32 && b <= 126 ? b : ' '));

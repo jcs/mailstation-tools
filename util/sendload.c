@@ -21,18 +21,9 @@
 #include "tribble.h"
 
 void
-timeout(int sig)
-{
-	printf("\ntimed out, aborting\n");
-	fflush(stdout);
-
-	_exit(1);
-}
-
-void
 usage(void)
 {
-	printf("usage: %s [-r] <file to send>\n", getprogname());
+	printf("usage: %s [-dr] <file to send>\n", getprogname());
 	exit(1);
 }
 
@@ -47,6 +38,9 @@ main(int argc, char *argv[])
 
 	while ((ch = getopt(argc, argv, "r")) != -1) {
 		switch (ch) {
+		case 'd':
+			tribble_debug = 1;
+			break;
 		case 'r':
 			raw = 1;
 			break;
@@ -84,21 +78,20 @@ main(int argc, char *argv[])
 	/* we're never going to send huge files */
 	size = (unsigned int)sb.st_size;
 
-	signal(SIGALRM, timeout);
-
 	printf("sending %s (%d bytes)...", fn, size);
 	fflush(stdout);
 
 	/* loader expects two bytes, the low and then high of the file size */
 	if (!raw) {
-		alarm(10);
-		sendbyte(size & 0xff);
-		sendbyte((size >> 8) & 0xff);
+		if (sendbyte(size & 0xff) != 0)
+			errx(1, "sendbyte failed");
+		if (sendbyte((size >> 8) & 0xff) != 0)
+			errx(1, "sendbyte failed");
 	}
 
 	while (sent < size) {
-		alarm(1);
-		sendbyte(fgetc(pFile));
+		if (sendbyte(fgetc(pFile)) != 0)
+			errx(1, "sendbyte failed at %d/%d", sent, size);
 
 		if (sent++ == 0)
 			printf("\n");
