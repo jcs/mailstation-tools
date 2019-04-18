@@ -28,7 +28,7 @@ Create an `obj` directory with `mkdir obj` and then run `make`.
 
 ### Loading code onto the Mailstation
 
-See [loader.txt](loader.txt) for a more thorough explanation.
+See [loader.txt](docs/loader.txt) for a more thorough explanation.
 
 tl;dr:
 
