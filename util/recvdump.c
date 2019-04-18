@@ -2,7 +2,7 @@
  * recvdump
  * based on win32/maildump.cpp by FyberOptic
  *
- * usage: recvdump [-data | -code]
+ * usage: recvdump [-data | -code | -mem]
  *
  * must be run as root to set iopl and use inb/outb
  *
@@ -20,28 +20,38 @@
 
 #include "tribble.h"
 
+void
+usage(void)
+{
+	printf("usage: %s [-code | -data | -mem]\n", getprogname());
+	exit(1);
+}
+
 int
 main(int argc, char *argv[])
 {
 	FILE *pFile;
 	unsigned int received = 0, expected = 0;
-	unsigned char b;
+	int b;
 	char fn[14];
-	int codeflash = 0, dataflash = 0;
+	int codeflash = 0, dataflash = 0, mem = 0;
 	int x;
 
 	for (x = 1; x < argc; x++) {
-		if (strncmp((char *)argv[x], "-code", 5) == 0)
+		if (strncmp((char *)argv[x], "-code", 5) == 0) {
+			if (dataflash || mem)
+				usage();
 			codeflash = 1;
-		else if (strncmp((char *)argv[x], "-data", 5) == 0)
+		} else if (strncmp((char *)argv[x], "-data", 5) == 0) {
+			if (codeflash || mem)
+				usage();
 			dataflash = 1;
-		else
+		} else if (strncmp((char *)argv[x], "-mem", 4) == 0) {
+			if (codeflash || dataflash)
+				usage();
+			mem = 1;
+		} else
 			printf("unknown parameter: %s\n", argv[x]);
-	}
-
-	if (codeflash == dataflash) {
-		printf("usage: %s [-code | -data]\n", argv[0]);
-		return 1;
 	}
 
 	if (codeflash) {
@@ -50,7 +60,11 @@ main(int argc, char *argv[])
 	} else if (dataflash) {
 		expected = 1024 * 512;
 		strlcpy(fn, "dataflash.bin", sizeof(fn));
-	}
+	} else if (mem) {
+		expected = (1024 * 64) - 1;
+		strlcpy(fn, "mem.bin", sizeof(fn));
+	} else
+		usage();
 
 	if (geteuid() != 0)
 		errx(1, "must be run as root");

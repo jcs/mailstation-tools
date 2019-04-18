@@ -24,13 +24,15 @@ IOPL_LIB=-li386
 .endif
 .endif
 
-all: objdir loader.bin codedump.bin datadump.bin recvdump sendload tribble_getty
+all: objdir loader.bin codedump.bin datadump.bin memdump.bin \
+	recvdump sendload tribble_getty
 
 objdir:
 	@mkdir -p ${OBJ}
 
 clean:
-	rm -f *.{map,bin,ihx,lst,rel,sym,lk,noi} recvdump sendload tribble_getty
+	rm -f *.{map,bin,ihx,lst,rel,sym,lk,noi} recvdump sendload \
+		tribble_getty
 
 # parallel loader
 loader.rel: loader.asm
@@ -60,6 +62,15 @@ datadump.ihx: datadump.rel
 	$(SDCC) --no-std-crt0 -o $@ $>
 
 datadump.bin: datadump.ihx
+	hex2bin $> >/dev/null
+
+memdump.rel: memdump.asm
+	$(ASZ80) -o $@ $>
+
+memdump.ihx: memdump.rel
+	$(SDCC) --no-std-crt0 -o $@ $>
+
+memdump.bin: memdump.ihx
 	hex2bin $> >/dev/null
 
 # datadump/codedump receiver

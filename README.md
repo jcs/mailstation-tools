@@ -98,6 +98,20 @@ Then run the new Data Dump app on the Mailstation and `recvdump` should show
 its progress as it reads the transmitted data and saves it to `dataflash.bin`.
 You may want to run it twice and compare checksums of the two resulting files.
 
+### `memdump.asm`
+
+Mem Dump is used to read the contents of the current 64Kb of memory.
+It does not read additional pages of memory but shows the current layout of
+code page 0, the slot `0x4000` and `0x8000` devices, and page 0 of RAM.
+
+You need to type the hex values of `z80/memdump.bin` into one of the
+application slots as detailed above.
+
+Run `obj/recvdump -mem` to wait for the memory dump to begin.
+
+Then run the new Mem Dump app on the Mailstation and `recvdump` should show
+its progress as it reads the transmitted data and saves it to `mem.bin`.
+
 ### Extracting programs from `dataflash` dumps
 
 While most of the core functionality of the Mailstation lives on the codeflash
