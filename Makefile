@@ -1,8 +1,6 @@
 #
 # ASM code requires SDCC and its ASZ80 assembler
 # http://sdcc.sourceforge.net/
-# and hex2bin
-# https://sourceforge.net/projects/hex2bin/files/hex2bin/
 #
 
 ASZ80	?= sdasz80 -l
@@ -42,7 +40,7 @@ loader.ihx: loader.rel
 	$(SDCC) --no-std-crt0 -o $@ $>
 
 loader.bin: loader.ihx
-	hex2bin $> >/dev/null
+	objcopy -Iihex -Obinary $> $@
 
 
 # parallel dumpers, codeflash and dataflash
@@ -53,7 +51,7 @@ codedump.ihx: codedump.rel
 	$(SDCC) --no-std-crt0 -o $@ $>
 
 codedump.bin: codedump.ihx
-	hex2bin $> >/dev/null
+	objcopy -Iihex -Obinary $> $@
 
 datadump.rel: datadump.asm
 	$(ASZ80) -o $@ $>
@@ -62,7 +60,7 @@ datadump.ihx: datadump.rel
 	$(SDCC) --no-std-crt0 -o $@ $>
 
 datadump.bin: datadump.ihx
-	hex2bin $> >/dev/null
+	objcopy -Iihex -Obinary $> $@
 
 memdump.rel: memdump.asm
 	$(ASZ80) -o $@ $>
@@ -71,7 +69,7 @@ memdump.ihx: memdump.rel
 	$(SDCC) --no-std-crt0 -o $@ $>
 
 memdump.bin: memdump.ihx
-	hex2bin $> >/dev/null
+	objcopy -Iihex -Obinary $> $@
 
 # datadump/codedump receiver
 recvdump: util/recvdump.c util/tribble.c
