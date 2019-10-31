@@ -12,6 +12,7 @@
 #define tribmask	0x07
 #define dibmask		0x03
 
+void checkio(void);
 unsigned int havetribble(void);
 int recvtribble(void);
 int recvbyte(void);

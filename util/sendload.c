@@ -15,8 +15,6 @@
 #include <unistd.h>
 #include <sys/types.h>
 #include <sys/stat.h>
-#include <machine/sysarch.h>
-#include <machine/pio.h>
 
 #include "tribble.h"
 
@@ -60,18 +58,7 @@ main(int argc, char *argv[])
 	if (argc != 1)
 		usage();
 
-	if (geteuid() != 0)
-		errx(1, "must be run as root");
-
-#ifdef __OpenBSD__
-#ifdef __amd64__
-	if (amd64_iopl(1) != 0)
-		errx(1, "amd64_iopl failed (is machdep.allowaperture=1?)");
-#elif defined(__i386__)
-	if (i386_iopl(1) != 0)
-		errx(1, "i386_iopl failed (is machdep.allowaperture=1?)");
-#endif
-#endif
+	checkio();
 
 	fn = argv[0];
 	pFile = fopen(fn, "rb");

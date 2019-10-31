@@ -1,6 +1,19 @@
 #include <stdio.h>
+#include <err.h>
+#include <unistd.h>
 #include <sys/types.h>
+
+#define INB inb
+
+#ifdef __OpenBSD__
+#include <machine/sysarch.h>
 #include <machine/pio.h>
+#define OUTB outb
+
+#elif defined(__linux__)
+#include <sys/io.h>
+#define OUTB(port, byte) outb(byte, port)
+#endif
 
 #include "tribble.h"
 
@@ -8,13 +21,32 @@ unsigned int tribble_port = PORTADDRESS;
 
 int tribble_debug = 0;
 
+void
+checkio(void)
+{
+	if (geteuid() != 0)
+		errx(1, "must be run as root");
+
+#ifdef __OpenBSD__
+#ifdef __amd64__
+	if (amd64_iopl(1) != 0)
+		errx(1, "amd64_iopl failed (is machdep.allowaperture=1?)");
+#elif defined(__i386__)
+	if (i386_iopl(1) != 0)
+		errx(1, "i386_iopl failed (is machdep.allowaperture=1?)");
+#endif
+#elif defined(__linux__)
+	iopl(3);
+#endif
+}
+
 unsigned int
 havetribble(void)
 {
 	int tries;
 
 	/* drop busy */
-	outb(tribble_port + DATA, 0);
+	OUTB(tribble_port + DATA, 0);
 
 	/* wait for (inverted) strobe */
 	for (tries = 0; tries < 1024; tries++)
@@ -26,7 +58,7 @@ havetribble(void)
 			return 1;
 
 	/* re-raise busy */
-	outb(tribble_port + DATA, bsyout);
+	OUTB(tribble_port + DATA, bsyout);
 
 	return 0;
 }
@@ -38,27 +70,27 @@ recvtribble(void)
 	unsigned int tries;
 
 	/* drop busy */
-	outb(tribble_port + DATA, 0);
+	OUTB(tribble_port + DATA, 0);
 
 	/* wait for (inverted) strobe */
 	tries = 0;
-	while ((inb(tribble_port + STATUS) & stbin) != 0) {
+	while ((INB(tribble_port + STATUS) & stbin) != 0) {
 		if (++tries >= 500000) {
 			/* raise busy/ack */
-			outb(DATA,bsyout);
+			OUTB(tribble_port + DATA, bsyout);
 			return -1;
 		}
 	}
 
 	/* grab tribble */
-	b = (inb(tribble_port + STATUS) >> 3) & tribmask;
+	b = (INB(tribble_port + STATUS) >> 3) & tribmask;
 
 	/* raise busy/ack */
-	outb(tribble_port + DATA, bsyout);
+	OUTB(tribble_port + DATA, bsyout);
 
 	/* wait for (inverted) UNstrobe */
 	tries = 0;
-	while ((inb(tribble_port + STATUS) & stbin) == 0) {
+	while ((INB(tribble_port + STATUS) & stbin) == 0) {
 		if (++tries >= 500000)
 			return -1;
 	}
@@ -93,11 +125,11 @@ sendtribble(unsigned char b)
 	int ret = 0;
 
 	/* raise busy */
-	outb(tribble_port + DATA, bsyout);
+	OUTB(tribble_port + DATA, bsyout);
 
 	/* wait for mailstation to drop busy */
 	tries = 0;
-	while ((inb(tribble_port + STATUS) & bsyin) != 0) {
+	while ((INB(tribble_port + STATUS) & bsyin) != 0) {
 		if (++tries >= 500000) {
 			ret = 1;
 			goto sendtribble_out;
@@ -105,14 +137,14 @@ sendtribble(unsigned char b)
 	}
 
 	/* send tribble */
-	outb(tribble_port + DATA, b & tribmask);
+	OUTB(tribble_port + DATA, b & tribmask);
 
 	/* strobe */
-	outb(tribble_port + DATA, (b & tribmask) | stbout);
+	OUTB(tribble_port + DATA, (b & tribmask) | stbout);
 
 	/* wait for ack */
 	tries = 0;
-	while ((inb(tribble_port + STATUS) & bsyin) == 0) {
+	while ((INB(tribble_port + STATUS) & bsyin) == 0) {
 		if (++tries >= 500000) {
 			ret = 1;
 			goto sendtribble_out;
@@ -120,11 +152,11 @@ sendtribble(unsigned char b)
 	}
 
 	/* unstrobe */
-	outb(tribble_port + DATA, 0);
+	OUTB(tribble_port + DATA, 0);
 
 sendtribble_out:
 	/* raise busy/ack */
-	outb(tribble_port + DATA, bsyout);
+	OUTB(tribble_port + DATA, bsyout);
 
 	return ret;
 }
