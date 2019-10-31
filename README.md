@@ -56,7 +56,24 @@ Assuming your application header is correct at `02000` (see
 visible with the proper name (but a blank icon) under the Yahoo menu or the
 Extras menu (depending on the firmware version).
 
-### `loader.asm`
+### Parallel port access
+
+Host tools (`sendload`, `recvdump`, and `tribble_getty`) need direct access
+to the parallel port to communicate with the Mailstation over the Laplink
+cable using `inb` and `outb` system calls.
+A USB IEEE 1284 printer cable will *NOT* work, though a PCI parallel port card
+will (including via a Thunderbolt enclosure if on a laptop).
+If you are using a parallel port other than the standard port of `0x378`,
+supply the `-p <port>` option to the host programs with the port in
+hexadecimal.
+
+On OpenBSD, direct port access will require the `machdep.allowaperture` sysctl
+set to `1` or higher.  On OpenBSD and Linux, these host tools will also have
+to be executed as root.
+
+### Included tools
+
+#### `loader.asm`
 
 Loader is used to load binary code over the Laplink cable into RAM and then
 execute it.
@@ -68,7 +85,7 @@ the new Loader app on the Mailstation.
 Then run `obj/sendload <your binary file>` to send your binary code over the
 Laplink cable and it will be executed as soon as the transfer is done.
 
-### `codedump.asm`
+#### `codedump.asm`
 
 Code Dump is used to read the contents of the 1Mb flash chip containing the
 Mailstation's code and send it over the Laplink cable.
@@ -76,13 +93,13 @@ Mailstation's code and send it over the Laplink cable.
 You need to type the hex values of `z80/codedump.bin` into one of the
 application slots as detailed above.
 
-Run `obj/recvdump -code` to wait for the code dump to begin.
+Run `obj/recvdump code` to wait for the code dump to begin.
 
 Then run the new Code Dump app on the Mailstation and `recvdump` should show
 its progress as it reads the transmitted data and saves it to `codeflash.bin`.
 You may want to run it twice and compare checksums of the two resulting files.
 
-### `datadump.asm`
+#### `datadump.asm`
 
 Data Dump is used to read the contents of the 512Kb flash chip containing the
 Mailstation's data area (containing downloaded programs, e-mails, etc.) and
@@ -91,13 +108,13 @@ send it over the Laplink cable.
 You need to type the hex values of `z80/datadump.bin` into one of the
 application slots as detailed above.
 
-Run `obj/recvdump -data` to wait for the data dump to begin.
+Run `obj/recvdump data` to wait for the data dump to begin.
 
 Then run the new Data Dump app on the Mailstation and `recvdump` should show
 its progress as it reads the transmitted data and saves it to `dataflash.bin`.
 You may want to run it twice and compare checksums of the two resulting files.
 
-### `memdump.asm`
+#### `memdump.asm`
 
 Mem Dump is used to read the contents of the current 64Kb of memory.
 It does not read additional pages of memory but shows the current layout of
@@ -106,7 +123,7 @@ code page 0, the slot `0x4000` and `0x8000` devices, and page 0 of RAM.
 You need to type the hex values of `z80/memdump.bin` into one of the
 application slots as detailed above.
 
-Run `obj/recvdump -mem` to wait for the memory dump to begin.
+Run `obj/recvdump mem` to wait for the memory dump to begin.
 
 Then run the new Mem Dump app on the Mailstation and `recvdump` should show
 its progress as it reads the transmitted data and saves it to `mem.bin`.
