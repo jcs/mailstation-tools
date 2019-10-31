@@ -2,20 +2,20 @@
  * recvdump
  * based on win32/maildump.cpp by FyberOptic
  *
- * usage: recvdump [-data | -code | -mem]
- *
  * must be run as root to set iopl and use inb/outb
  *
- * assumes parallel port is at PORTADDRESS and codedump or datadump has been
- * loaded on the Mailstation and is running
+ * assumes codedump or datadump has been loaded on the Mailstation and is
+ * running
  */
 
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
 #include <err.h>
+#include <errno.h>
 #include <unistd.h>
 #include <sys/types.h>
+#include <sys/limits.h>
 #include <machine/sysarch.h>
 
 #include "tribble.h"
@@ -23,7 +23,8 @@
 void
 usage(void)
 {
-	printf("usage: %s [-code | -data | -mem]\n", getprogname());
+	printf("usage: %s [-d] [-p port address] <code|data|mem>\n",
+	    getprogname());
 	exit(1);
 }
 
@@ -32,27 +33,43 @@ main(int argc, char *argv[])
 {
 	FILE *pFile;
 	unsigned int received = 0, expected = 0;
-	int b;
+	int ch, b, codeflash = 0, dataflash = 0, mem = 0;
 	char fn[14];
-	int codeflash = 0, dataflash = 0, mem = 0;
-	int x;
 
-	for (x = 1; x < argc; x++) {
-		if (strncmp((char *)argv[x], "-code", 5) == 0) {
-			if (dataflash || mem)
-				usage();
-			codeflash = 1;
-		} else if (strncmp((char *)argv[x], "-data", 5) == 0) {
-			if (codeflash || mem)
-				usage();
-			dataflash = 1;
-		} else if (strncmp((char *)argv[x], "-mem", 4) == 0) {
-			if (codeflash || dataflash)
-				usage();
-			mem = 1;
-		} else
-			printf("unknown parameter: %s\n", argv[x]);
+	while ((ch = getopt(argc, argv, "dp:")) != -1) {
+		switch (ch) {
+		case 'd':
+			tribble_debug = 1;
+			break;
+		case 'p':
+			tribble_port = (unsigned)strtol(optarg, NULL, 0);
+			if (errno)
+				err(1, "invalid port value");
+			break;
+		default:
+			usage();
+		}
 	}
+	argc -= optind;
+	argv += optind;
+
+	if (argc != 1)
+		usage();
+
+	if (strncmp((char *)argv[0], "code", 5) == 0) {
+		if (dataflash || mem)
+			usage();
+		codeflash = 1;
+	} else if (strncmp((char *)argv[0], "data", 5) == 0) {
+		if (codeflash || mem)
+			usage();
+		dataflash = 1;
+	} else if (strncmp((char *)argv[0], "mem", 4) == 0) {
+		if (codeflash || dataflash)
+			usage();
+		mem = 1;
+	} else
+		errx(1, "unknown dump parameter: %s\n", argv[0]);
 
 	if (codeflash) {
 		expected = 1024 * 1024;
@@ -85,7 +102,8 @@ main(int argc, char *argv[])
 		return 1;
 	}
 
-	printf("dumping to %s, run Code Dump on Mailstation...", fn);
+	printf("[port 0x%x] dumping to %s, run Code Dump on Mailstation...",
+	    tribble_port, fn);
 	fflush(stdout);
 
 	while (received < expected) {

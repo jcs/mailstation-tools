@@ -3,8 +3,7 @@
  *
  * must be run as root to set iopl and use inb/outb
  *
- * assumes parallel port is at PORTADDRESS and Loader has been loaded on the
- * Mailstation and is running
+ * assumes Loader has been loaded on the Mailstation and is running
  */
 
 #include <stdio.h>
@@ -12,6 +11,7 @@
 #include <string.h>
 #include <signal.h>
 #include <err.h>
+#include <errno.h>
 #include <unistd.h>
 #include <sys/types.h>
 #include <sys/stat.h>
@@ -23,7 +23,8 @@
 void
 usage(void)
 {
-	printf("usage: %s [-dr] <file to send>\n", getprogname());
+	printf("usage: %s [-dr] [-p port address] <file to send>\n",
+	    getprogname());
 	exit(1);
 }
 
@@ -36,10 +37,15 @@ main(int argc, char *argv[])
 	int ch;
 	char *fn;
 
-	while ((ch = getopt(argc, argv, "r")) != -1) {
+	while ((ch = getopt(argc, argv, "dp:r")) != -1) {
 		switch (ch) {
 		case 'd':
 			tribble_debug = 1;
+			break;
+		case 'p':
+			tribble_port = (unsigned)strtol(optarg, NULL, 0);
+			if (errno)
+				err(1, "invalid port value");
 			break;
 		case 'r':
 			raw = 1;
@@ -78,7 +84,7 @@ main(int argc, char *argv[])
 	/* we're never going to send huge files */
 	size = (unsigned int)sb.st_size;
 
-	printf("sending %s (%d bytes)...", fn, size);
+	printf("[port 0x%x] sending %s (%d bytes)...", tribble_port, fn, size);
 	fflush(stdout);
 
 	/* loader expects two bytes, the low and then high of the file size */

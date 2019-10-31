@@ -24,6 +24,13 @@
 
 #include "tribble.h"
 
+void
+usage(void)
+{
+	printf("usage: %s [-d] [-p port address]\n", getprogname());
+	exit(1);
+}
+
 int
 main(int argc, char *argv[])
 {
@@ -32,7 +39,27 @@ main(int argc, char *argv[])
 	size_t cc = 0;
 	fd_set rfds;
 	pid_t child;
-	int master, slave, b;
+	int master, slave, ch, b;
+
+	while ((ch = getopt(argc, argv, "dp:")) != -1) {
+		switch (ch) {
+		case 'd':
+			tribble_debug = 1;
+			break;
+		case 'p':
+			tribble_port = (unsigned)strtol(optarg, NULL, 0);
+			if (errno)
+				err(1, "invalid port value");
+			break;
+		default:
+			usage();
+		}
+	}
+	argc -= optind;
+	argv += optind;
+
+	if (argc != 0)
+		usage();
 
 	if (geteuid() != 0)
 		errx(1, "must be run as root");
@@ -46,6 +73,8 @@ main(int argc, char *argv[])
 		errx(1, "i386_iopl failed (is machdep.allowaperture=1?)");
 #endif
 #endif
+
+	printf("[port 0x%x]\n", tribble_port);
 
 	if (openpty(&master, &slave, NULL, NULL, NULL) == -1)
 		errx(1, "openpty");

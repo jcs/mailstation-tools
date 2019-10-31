@@ -4,6 +4,8 @@
 
 #include "tribble.h"
 
+unsigned int tribble_port = PORTADDRESS;
+
 int tribble_debug = 0;
 
 unsigned int
@@ -12,11 +14,11 @@ havetribble(void)
 	int tries;
 
 	/* drop busy */
-	outb(DATA, 0);
+	outb(tribble_port + DATA, 0);
 
 	/* wait for (inverted) strobe */
 	for (tries = 0; tries < 1024; tries++)
-		if ((inb(STATUS) & stbin) == 0)
+		if ((inb(tribble_port + STATUS) & stbin) == 0)
 			/*
 			 * leave busy dropped, assume recvtribble() will deal
 			 * with it
@@ -24,7 +26,7 @@ havetribble(void)
 			return 1;
 
 	/* re-raise busy */
-	outb(DATA, bsyout);
+	outb(tribble_port + DATA, bsyout);
 
 	return 0;
 }
@@ -36,11 +38,11 @@ recvtribble(void)
 	unsigned int tries;
 
 	/* drop busy */
-	outb(DATA, 0);
+	outb(tribble_port + DATA, 0);
 
 	/* wait for (inverted) strobe */
 	tries = 0;
-	while ((inb(STATUS) & stbin) != 0) {
+	while ((inb(tribble_port + STATUS) & stbin) != 0) {
 		if (++tries >= 500000) {
 			/* raise busy/ack */
 			outb(DATA,bsyout);
@@ -49,14 +51,14 @@ recvtribble(void)
 	}
 
 	/* grab tribble */
-	b = (inb(STATUS) >> 3) & tribmask;
+	b = (inb(tribble_port + STATUS) >> 3) & tribmask;
 
 	/* raise busy/ack */
-	outb(DATA,bsyout);
+	outb(tribble_port + DATA, bsyout);
 
 	/* wait for (inverted) UNstrobe */
 	tries = 0;
-	while ((inb(STATUS) & stbin) == 0) {
+	while ((inb(tribble_port + STATUS) & stbin) == 0) {
 		if (++tries >= 500000)
 			return -1;
 	}
@@ -91,11 +93,11 @@ sendtribble(unsigned char b)
 	int ret = 0;
 
 	/* raise busy */
-	outb(DATA, bsyout);
+	outb(tribble_port + DATA, bsyout);
 
 	/* wait for mailstation to drop busy */
 	tries = 0;
-	while ((inb(STATUS) & bsyin) != 0) {
+	while ((inb(tribble_port + STATUS) & bsyin) != 0) {
 		if (++tries >= 500000) {
 			ret = 1;
 			goto sendtribble_out;
@@ -103,14 +105,14 @@ sendtribble(unsigned char b)
 	}
 
 	/* send tribble */
-	outb(DATA, b & tribmask);
+	outb(tribble_port + DATA, b & tribmask);
 
 	/* strobe */
-	outb(DATA, (b & tribmask) | stbout);
+	outb(tribble_port + DATA, (b & tribmask) | stbout);
 
 	/* wait for ack */
 	tries = 0;
-	while ((inb(STATUS) & bsyin) == 0) {
+	while ((inb(tribble_port + STATUS) & bsyin) == 0) {
 		if (++tries >= 500000) {
 			ret = 1;
 			goto sendtribble_out;
@@ -118,12 +120,11 @@ sendtribble(unsigned char b)
 	}
 
 	/* unstrobe */
-	outb(DATA, 0);
+	outb(tribble_port + DATA, 0);
 
 sendtribble_out:
-
 	/* raise busy/ack */
-	outb(DATA, bsyout);
+	outb(tribble_port + DATA, bsyout);
 
 	return ret;
 }
