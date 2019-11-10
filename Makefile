@@ -22,7 +22,8 @@ IOPL_LIB=-li386
 .endif
 .endif
 
-all: objdir loader.bin codedump.bin datadump.bin memdump.bin \
+all: objdir \
+	loader.bin codedump.bin datadump.bin memdump.bin dataflashloader.bin \
 	recvdump sendload tribble_getty
 
 objdir:
@@ -40,6 +41,16 @@ loader.ihx: loader.rel
 	$(SDCC) --no-std-crt0 -o $@ $>
 
 loader.bin: loader.ihx
+	objcopy -Iihex -Obinary $> $@
+
+# dataflash loader
+dataflashloader.rel: dataflashloader.asm
+	$(ASZ80) -o $@ $>
+
+dataflashloader.ihx: dataflashloader.rel
+	$(SDCC) --no-std-crt0 -o $@ $>
+
+dataflashloader.bin: dataflashloader.ihx
 	objcopy -Iihex -Obinary $> $@
 
 
