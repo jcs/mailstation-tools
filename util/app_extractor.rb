@@ -124,9 +124,10 @@ end
   puts "icon#{i}:"
 
   icons[i][:width] = read(2)
-  puts "\t.dw\t##{x icons[i][:width], 4}\t\t; icon width"
+  puts "\t.dw\t##{x icons[i][:width], 4}\t\t; icon width (#{icons[i][:width]})"
   icons[i][:height] = read(1)
-  puts "\t.db\t##{x icons[i][:height], 2}\t\t; icon height"
+  puts "\t.db\t##{x icons[i][:height], 2}\t\t; icon height " <<
+    "(#{icons[i][:height]})"
 
   puts ""
 
