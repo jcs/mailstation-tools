@@ -29,10 +29,8 @@ Create an `obj` directory with `mkdir obj` and then run `make`.
 
 See [loader.txt](docs/loader.txt) for a more thorough explanation.
 
-tl;dr:
-
-- Obtain a DB25 parallel Laplink cable.  Be sure to verify the pin-out as it is
-  not a straight-through DB25 modem or printer cable.
+- Connect a Teensy loader or Laplink parallel port cable to the DB25 port on
+  the Mailstation.
 
 - With the Mailstation off, hold down the `Function`+`Shift`+`T` keys and press
   the `Power` button to turn it on.  Instead of booting up to the Cidco logo,
@@ -58,24 +56,75 @@ Extras menu (depending on the firmware version).
 
 ### Parallel port access
 
-Host tools (`sendload`, `recvdump`, and `tribble_getty`) need direct access
-to the parallel port to communicate with the Mailstation over the Laplink
-cable using `inb` and `outb` system calls.
+A DB25 LapLink parallel port cable is required for this method of connection.
+
 A USB IEEE 1284 printer cable will *NOT* work, though a PCI parallel port card
 will (including via a Thunderbolt enclosure if on a laptop).
 If you are using a parallel port other than the standard port of `0x378`,
 supply the `-p <port>` option to the host programs with the port in
 hexadecimal.
 
+When connecting to the Mailstation via parallel port, host tools
+(`sendload`, `recvdump`, and `tribble_getty`) need direct access
+to the port to communicate with the Mailstation over the Laplink
+cable using `inb` and `outb` system calls.
+
 On OpenBSD, direct port access will require the `machdep.allowaperture` sysctl
 set to `1` or higher.  On OpenBSD and Linux, these host tools will also have
 to be executed as root.
 
-### Included tools
+### USB Loader with Teensy
+
+If you don't have a computer with a parallel port, you can use a
+[Teensy 3.2](https://www.pjrc.com/store/teensy32.html)
+which will connect to your computer via USB, and to the Mailstation via its
+many digital I/O pins:
+
+|Teensy Pin|Mailstation Pin|
+|----------|---------------|
+|1|2|
+|2|3|
+|3|4|
+|4|5|
+|5|6|
+|7|10|
+|8|11|
+|9|12|
+|10|13|
+|11|15|
+|GND|25|
+
+- Install [Arduino-Makefile](https://github.com/sudar/Arduino-Makefile) and
+[Teensyduino](https://www.pjrc.com/teensy/teensyduino.html)
+
+- `cd teensy-loader && make` (`gmake` on OpenBSD)
+
+- Upload `build-*/teensy-loader_.hex` firmware with `teensyloader` and Teensy
+will reattach as a USB serial device:
+
+````
+umodem0 at uhub0 port 4 configuration 1 interface 0 "jcs Mailstation Loader" rev 1.10/2.75 addr 9
+ucom0 at umodem0
+````
+
+### Included host-side tools in `util/`
+
+#### `sendload`
+
+Writes a binary program file through the parallel port or USB serial port in
+the Mailstation's "tribble" format, sending each byte 3 bits at a time.
+
+#### `recvdump`
+
+Receives a dump from `codedump`, `datadump`, and `memdump` programs executed
+on the Mailstation and writes the bytes received to `codedump.bin`,
+`datadump.bin`, or `memdump.bin`.
+
+### Included Mailstation Z80 tools
 
 #### `loader.asm`
 
-Loader is used to load binary code over the Laplink cable into RAM and then
+Loader is used to load binary code over the parallel port into RAM and then
 execute it.
 
 You need to type the hex values of `z80/loader.bin` (tip: use `hexdump -C
@@ -83,12 +132,13 @@ z80/loader.bin`) into one of the application slots as detailed above, then run
 the new Loader app on the Mailstation.
 
 Then run `obj/sendload <your binary file>` to send your binary code over the
-Laplink cable and it will be executed as soon as the transfer is done.
+parallel port and it will be executed on the Mailstation as soon as the
+transfer is done.
 
 #### `codedump.asm`
 
 Code Dump is used to read the contents of the 1Mb flash chip containing the
-Mailstation's code and send it over the Laplink cable.
+Mailstation's code and send it over the parallel port.
 
 You need to type the hex values of `z80/codedump.bin` into one of the
 application slots as detailed above.
@@ -103,7 +153,7 @@ You may want to run it twice and compare checksums of the two resulting files.
 
 Data Dump is used to read the contents of the 512Kb flash chip containing the
 Mailstation's data area (containing downloaded programs, e-mails, etc.) and
-send it over the Laplink cable.
+send it over the parallel port.
 
 You need to type the hex values of `z80/datadump.bin` into one of the
 application slots as detailed above.
