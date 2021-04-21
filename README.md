@@ -49,8 +49,8 @@ See [loader.txt](docs/loader.txt) for a more thorough explanation.
 
 - Press `Back`, then `q` to quit and reboot.
 
-Assuming your application header is correct at `02000` (see
-[loader.txt](loader.txt) for an explanation), the application should now be
+Assuming your application header is correct at `020000` (see
+[loader.txt](docs/loader.txt) for an explanation), the application should now be
 visible with the proper name (but a blank icon) under the Yahoo menu or the
 Extras menu (depending on the firmware version).
 
