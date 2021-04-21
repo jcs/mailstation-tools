@@ -23,7 +23,7 @@ assemblers.
 
 Install [SDCC](http://sdcc.sourceforge.net/).
 
-Create an `obj` directory with `mkdir obj` and then run `make`.
+Create an `obj` directory with `mkdir obj` and then run `make`. (If your system `make` is GNU Make, install and use `bmake` for this project.)
 
 ### Loading code onto the Mailstation
 
