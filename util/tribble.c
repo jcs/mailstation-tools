@@ -13,6 +13,18 @@
 #elif defined(__linux__)
 #include <sys/io.h>
 #define OUTB(port, byte) outb(byte, port)
+
+#else
+void
+OUTB(int port, int byte)
+{
+	errx(1, "cannot write to parallel port");
+}
+int
+inb(int port)
+{
+	errx(1, "cannot read from parallel port");
+}
 #endif
 
 #include "tribble.h"
@@ -50,7 +62,7 @@ havetribble(void)
 
 	/* wait for (inverted) strobe */
 	for (tries = 0; tries < 1024; tries++)
-		if ((inb(tribble_port + STATUS) & stbin) == 0)
+		if ((INB(tribble_port + STATUS) & stbin) == 0)
 			/*
 			 * leave busy dropped, assume recvtribble() will deal
 			 * with it
