@@ -59,21 +59,33 @@ if width != 34 || height != 34
   raise "image should be 34x34, not #{width}x#{height}"
 end
 
-line = xpm.gets
-if line.match(/^\" \tc None/)
-  # skip
+blank = nil
+black = nil
+2.times do
   line = xpm.gets
+  if line.match(/^\" \tc None/)
+    # skip
+    line = xpm.gets
+  end
+
+  if !(m = line.match(/^\"(.)\tc #(FFFFFF|000000)/))
+    raise "unexpected line: #{line.inspect}"
+  end
+  if m[2][0] == "F"
+    blank = m[1]
+  elsif m[2][0] == "0"
+    black = m[1]
+  else
+    raise "unexpected color: #{line.inspect}"
+  end
 end
 
-if !(m = line.match(/^\"(.)\tc #FFFFFF/))
-  raise "unexpected line: #{line.inspect}"
+if !blank
+  raise "no blank color found"
 end
-blank = m[1]
-
-if !(m = (line = xpm.gets).match(/^\"(.)\tc #000000/))
-  raise "unexpected line: #{line.inspect}"
+if !black
+  raise "no black color found"
 end
-black = m[1]
 
 puts "icon0:"
 puts "\t.dw\t##{sprintf("0x%02x", width)}\t\t\t; icon width (#{width})"
